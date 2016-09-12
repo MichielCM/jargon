@@ -2,8 +2,8 @@ package jargon.utils.fuzzymatcher;
 
 public abstract class Resource {
 
-	public abstract Object read();
+	public abstract Record[] read();
 	
-	public abstract Object read(String id);
+	public abstract Record read(String id);
 	
 }

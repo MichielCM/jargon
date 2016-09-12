@@ -15,11 +15,11 @@ public class FuzzyMatcher {
 		JAROWINKLER
 	}
 	
-	private CSVResource comparators;
+	private Resource comparators;
 	
 	public FuzzyMatcher() {}
 	
-	public FuzzyMatcher(CSVResource comparators) {
+	public FuzzyMatcher(Resource comparators) {
 		this.comparators = comparators;
 	}
 	

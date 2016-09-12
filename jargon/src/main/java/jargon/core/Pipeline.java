@@ -15,9 +15,14 @@ import jargon.core.Settings;
 import jargon.model.Source;
 import jargon.model.folia.Folia;
 import jargon.utils.TimeOut;
+import jargon.utils.autocorrector.AutoCorrector;
 
 public class Pipeline {
 
+	public enum Segments {
+		RAW, SENTENCES, TOKENS
+	}
+	
 	private Source source;
 	private String text;
 	private Folia[] folia;
@@ -25,9 +30,9 @@ public class Pipeline {
 	
 	public Pipeline(Source source) {
 		this.source = source;
-		this.text = source.text;
+		//this.text = source.raw;
 		//this.tokens = this.tokenize();
-		Console.log(this.text);
+		//Console.log(this.text);
 	}
 	
 	public Source getSource() {
@@ -38,37 +43,102 @@ public class Pipeline {
 		return this.folia;
 	}
 	
-	public Pipeline segmentize() {
-		this.source.segments = this._segmentize();
-		return this;
-	}
-	
-	private String[] _segmentize() {
-		return this.source.text.split("(?<=[.,—?!;])");
-	}
-	
-	public Pipeline spellcheck() {
-		this.text = this._spellcheck();
-		return this;
-	}
-	
-	private String _spellcheck() {
-		
-		/*try {
-			JLanguageTool jLanguageTool = new JLanguageTool(new Dutch());
-			List<RuleMatch> matches = jLanguageTool.check("dit is een teksst met fauten.");
-			
-			for (RuleMatch match : matches) {
-			  System.out.println("Potential error at characters " +
-			      match.getFromPos() + "-" + match.getToPos() + ": " +
-			      match.getMessage());
-			  System.out.println("Suggested correction(s): " +
-			      match.getSuggestedReplacements());
-			}
-		} catch (IOException e) {
+	public Pipeline segmentize(Segments segmentType) {
+		try {
+			this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).set(this.source, this._segmentize(segmentType));
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
+		
+		return this;
+	}
+	
+	private String[] _segmentize(Segments segmentType) {
+		switch(segmentType) {
+			case SENTENCES:
+				return this.source.raw[0].split("(?<=[.,—?!;])");
+			case TOKENS:
+				return null; //TODO
+			default:
+				return null;
+		}
+		
+	}
+	
+	public Pipeline unabbreviate(Segments segmentType) {
+		try {
+			this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).set(this.source, this._unabbreviate(segmentType));
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return this;
+	}
+	
+	private String[] _unabbreviate(Segments segmentType) {
+		try {
+			String[] segments = (String[])this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).get(this.source);
+			
+			for (int i=0; i<segments.length; i++) {
+				AutoCorrector autoCorrector = new AutoCorrector();
+				segments[i] = autoCorrector.autoCorrect(segments[i], "UNABBREVIATION");
+				
+				/*CSVReader csvReader = new CSVReader(
+					new File(this.getClass().getClassLoader().getResource("custom-abbreviations.csv").getFile()),
+					new String[] {"abbreviation","description"},
+					"abbreviation",
+					"\r\n",
+					";"
+				);*/
+				
+				/*for (CSVRecord csvRecord : csvReader.read()) {
+					autoCorrector.addCustomRules(
+						new AbbreviationReplaceRule(
+							csvRecord.get("abbreviation"), csvRecord.get("description"), true
+						),
+						new AbbreviationReplaceRule(
+							csvRecord.get("abbreviation"), csvRecord.get("description"), false
+						)
+					);
+				}*/
+			}
+			
+			return segments;
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public Pipeline spellcheck(Segments segmentType) {
+		try {
+			this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).set(this.source, this._spellcheck(segmentType));
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return this;
+	}
+	
+	private String[] _spellcheck(Segments segmentType) {
+		try {
+			String[] segments = (String[])this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).get(this.source);
+			
+			for (int i=0; i<segments.length; i++) {
+				AutoCorrector autoCorrector = new AutoCorrector();
+				segments[i] = autoCorrector.autoCorrect(segments[i], "TYPOS");
+			}
+			
+			return segments;
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return null;
 	}
@@ -95,7 +165,8 @@ public class Pipeline {
 			
 			//Socket socket = SingletonFactory.getSingletonFactory().getLaMachine();
 			
-			for (String segment : (segments ? this.source.segments : new String[] { this.text })) {
+			//for (String segment : (segments ? this.source.sentences : new String[] { this.text })) {
+			for (String segment : (new String[] { this.text })) {
 				Console.log(segment);
 				
 				//send data

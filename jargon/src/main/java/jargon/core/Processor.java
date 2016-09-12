@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jargon.core.BasicServlet;
+import jargon.core.Pipeline.Segments;
 import jargon.model.Source;
 import jargon.model.folia.Feature;
 import jargon.model.folia.Folia;
@@ -63,10 +64,16 @@ public class Processor extends BasicServlet {
 			.registerMimeTypes(FileType.TEXT, "application/json", "application/csv", "application/xml")
 			.upload(request);
 		
-		this.replyInXML(
+		this.replyInJSON(
 			new Pipeline(
 				new Source((uploader.get("querytext")).getContent().toString())
-			).spellcheck().getSource().text //.segmentize().frog(true).getFolia()
+			/*).segmentize(
+				Segments.SENTENCES*/
+			).unabbreviate(
+				Segments.RAW
+			).spellcheck(
+				Segments.RAW
+			).getSource().raw //.segmentize().frog(true).getFolia()
 		);
 		
 		//System.out.println(pipeline.tokenize().length);

@@ -26,7 +26,6 @@ public class Test extends BasicServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		super.doGet(request, response);
-		super.reply("bla");
 	}
 
 	/**
@@ -35,7 +34,11 @@ public class Test extends BasicServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		super.doPost(request, response);
-		super.reply("blaat");
+		
+		for (int i=0; i<100; i++) {
+			//super.reply(String.valueOf(Math.random()));
+			super.reply(String.valueOf(new java.util.Random().nextDouble()));
+		}
 	}
 
 }
