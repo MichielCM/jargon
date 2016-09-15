@@ -3,20 +3,15 @@ package jargon.model.folia;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
-public class Section {
-	
+public class Entity {
+
 	@JacksonXmlElementWrapper(useWrapping = false)
-	public Word[] w;
-	
-	public Entities entities;
-	
-	public Chunking chunking;
-	
-	public Dependencies dependencies;
+	public WordReference[] wref;
 	
 	@JacksonXmlProperty(isAttribute = true)
 	public String id;
 	
-	public String t;
+	@JacksonXmlProperty(isAttribute = true)
+	public String set;
 	
 }

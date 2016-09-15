@@ -12,7 +12,7 @@ public final class Settings {
 			properties = new Properties();
 			properties.load(
 				this.getClass().getClassLoader().getResourceAsStream(
-					"/dq/nlp/resources/".concat(propertiesFile).concat(".properties")
+					propertiesFile.concat(".properties")
 				)
 			);
 		} catch (IOException e) {

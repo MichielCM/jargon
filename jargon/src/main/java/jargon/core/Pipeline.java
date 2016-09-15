@@ -11,7 +11,6 @@ import org.apache.commons.lang.ArrayUtils;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import jargon.core.Console;
-import jargon.core.Settings;
 import jargon.model.Source;
 import jargon.model.folia.Folia;
 import jargon.utils.TimeOut;
@@ -20,27 +19,17 @@ import jargon.utils.autocorrector.AutoCorrector;
 public class Pipeline {
 
 	public enum Segments {
-		RAW, SENTENCES, TOKENS
+		FULL, SENTENCES, TOKENS
 	}
 	
 	private Source source;
-	private String text;
-	private Folia[] folia;
-	//private String[] tokens;
 	
 	public Pipeline(Source source) {
 		this.source = source;
-		//this.text = source.raw;
-		//this.tokens = this.tokenize();
-		//Console.log(this.text);
 	}
 	
 	public Source getSource() {
 		return this.source;
-	}
-	
-	public Folia[] getFolia() {
-		return this.folia;
 	}
 	
 	public Pipeline segmentize(Segments segmentType) {
@@ -57,9 +46,9 @@ public class Pipeline {
 	private String[] _segmentize(Segments segmentType) {
 		switch(segmentType) {
 			case SENTENCES:
-				return this.source.raw[0].split("(?<=[.,—?!;])");
+				return this.source.full[0].split("(?<=[.,—?!;])");
 			case TOKENS:
-				return null; //TODO
+				return this.source.full[0].split("\b");
 			default:
 				return null;
 		}
@@ -84,25 +73,6 @@ public class Pipeline {
 			for (int i=0; i<segments.length; i++) {
 				AutoCorrector autoCorrector = new AutoCorrector();
 				segments[i] = autoCorrector.autoCorrect(segments[i], "UNABBREVIATION");
-				
-				/*CSVReader csvReader = new CSVReader(
-					new File(this.getClass().getClassLoader().getResource("custom-abbreviations.csv").getFile()),
-					new String[] {"abbreviation","description"},
-					"abbreviation",
-					"\r\n",
-					";"
-				);*/
-				
-				/*for (CSVRecord csvRecord : csvReader.read()) {
-					autoCorrector.addCustomRules(
-						new AbbreviationReplaceRule(
-							csvRecord.get("abbreviation"), csvRecord.get("description"), true
-						),
-						new AbbreviationReplaceRule(
-							csvRecord.get("abbreviation"), csvRecord.get("description"), false
-						)
-					);
-				}*/
 			}
 			
 			return segments;
@@ -143,30 +113,27 @@ public class Pipeline {
 		return null;
 	}
 	
-	public Pipeline frog(boolean segments) {
-		this._frog(segments);
+	public Pipeline frog(Segments segmentType) {
+		//try {
+			//this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).set(this.source, this._frog(segmentType));
+			this._frog(segmentType);
+		/*} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
 		return this;
 	}
 	
-	@SuppressWarnings("resource")
-	private Folia[] _frog(boolean segments) {
-		Socket socket = null;
+	private Folia[] _frog(Segments segmentType) {
 		PrintWriter printWriter = null;
 		InputStream inputStream = null;
 		
 		try {
-			Settings laMachine = new Settings("lamachine");
+			String[] segments = (String[])this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).get(this.source);
+			Socket socket = SingletonFactory.getSingletonFactory().getLaMachine();
 			
-			socket = new Socket(
-				laMachine.getAsString("host"),
-				laMachine.getAsInt("port")
-			);
-			socket.setKeepAlive(false);
-			
-			//Socket socket = SingletonFactory.getSingletonFactory().getLaMachine();
-			
-			//for (String segment : (segments ? this.source.sentences : new String[] { this.text })) {
-			for (String segment : (new String[] { this.text })) {
+			for (String segment : segments) {
 				Console.log(segment);
 				
 				//send data
@@ -191,33 +158,16 @@ public class Pipeline {
 					
 					//bytes > string > xml > folia
 					String response = responseBytes.toString("UTF-8").replaceFirst("READY$", "");
-					this.folia = (Folia[]) ArrayUtils.addAll(this.folia, new Folia[] { (Folia) new XmlMapper().readValue(response, Folia.class) });
+					Console.log(response);
+					this.source.folia = (Folia[]) ArrayUtils.addAll(this.source.folia, new Folia[] { (Folia) new XmlMapper().readValue(response, Folia.class) });
 				} else throw new IOException("No answer received");
 			}
-		} catch (IOException e) {
+		} catch (IOException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			try {
-				printWriter.close();
-				inputStream.reset();
-				inputStream.close();
-            	socket.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 		
-		return this.folia;
+		return this.source.folia;
 	}
-	
-	/*public String[] tokenize() {
-		return this.source.text.split("\\s+");
-	}*/
-	
-	public void anonymize() {}
-	
-	public void unabbreviate() {}
 	
 }

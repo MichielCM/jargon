@@ -64,20 +64,6 @@ public class Processor extends BasicServlet {
 			.registerMimeTypes(FileType.TEXT, "application/json", "application/csv", "application/xml")
 			.upload(request);
 		
-		this.replyInJSON(
-			new Pipeline(
-				new Source((uploader.get("querytext")).getContent().toString())
-			/*).segmentize(
-				Segments.SENTENCES*/
-			).unabbreviate(
-				Segments.RAW
-			).spellcheck(
-				Segments.RAW
-			).getSource().raw //.segmentize().frog(true).getFolia()
-		);
-		
-		//System.out.println(pipeline.tokenize().length);
-		
 		/*for (Upload up : uploader.getAll()) {
 			System.out.println(up.getType().toString());
 			System.out.println(up.getName());
@@ -90,6 +76,23 @@ public class Processor extends BasicServlet {
 			System.out.println(up.getContent());
 			System.out.println("---");
 		}*/
+		
+		Pipeline pipeline = new Pipeline(
+			new Source((uploader.get("text")).getContent().toString())
+		);
+		
+		if (uploader.get("unabbreviate") != null)
+			pipeline.unabbreviate(Segments.FULL);
+		
+		if (uploader.get("spellcheck") != null)
+			pipeline.spellcheck(Segments.FULL);
+		
+		pipeline.segmentize(Segments.SENTENCES);
+		
+		if (uploader.get("frog") != null)
+			pipeline.frog(Segments.SENTENCES);
+		
+		super.replyInJSON(pipeline.getSource().folia);
 		
 		/*System.out.println(uploader.get("foliafile").getContent());*/
 		

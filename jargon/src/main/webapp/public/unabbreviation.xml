@@ -1,0 +1,125 @@
+<!-- (More or less) common abbreviations -->
+
+<rule id="ws" name="waarschijnlijk">
+	<regexp>\b([Ww]s)([.]|\b)</regexp>
+	<message><suggestion>waarschijnlijk</suggestion></message>
+</rule>
+
+<rule id="vlgs" name="volgens">
+	<regexp>\b([Vv]lgs)([.]|\b)</regexp>
+	<message><suggestion>volgens</suggestion></message>
+</rule>
+
+<rule id="obv" name="op basis van">
+	<regexp>\b([Oo]bv|[Oo][.]b[.]v)([.]|\b)</regexp>
+	<message><suggestion>op basis van</suggestion></message>
+</rule>
+
+<rule id="ivm" name="in verband met">
+	<regexp>\b([Ii]vm|[Ii][.]v[.]m)([.]|\b)</regexp>
+	<message><suggestion>in verband met</suggestion></message>
+</rule>
+
+<rule id="mn" name="met name">
+	<regexp>\b([Mm][.]n([.]|\b))</regexp>
+	<message><suggestion>met name</suggestion></message>
+</rule>
+
+<rule id="v" name="van">
+	<regexp>\b([Vv]([.]|\b))</regexp>
+	<message><suggestion>van</suggestion></message>
+</rule>
+
+<rule id="vd" name="van de">
+	<regexp>\b([Vv][.]?d([.]|\b))</regexp>
+	<message><suggestion>van de</suggestion></message>
+</rule>
+
+<rule id="zn" name="zo nodig">
+	<regexp>\b([Zz][.]?n([.]|\b))</regexp>
+	<message><suggestion>zo nodig</suggestion></message>
+</rule>
+
+<!-- Medical abbreviations -->
+
+<rule id="li" name="linker">
+	<regexp>\b([Ll]i)(([-.])(\S*))?\b</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([Ll]i)(([-.])(\S*))?\b" regexp_replace="linker$4"/></suggestion></message>
+</rule>
+
+<rule id="re" name="rechter">
+	<regexp>\b([Rr]e)(([-.])(\S*))?\b</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([Rr]e)(([-.])(\S*))?\b" regexp_replace="rechter$4"/></suggestion></message>
+</rule>
+
+<rule id="x" name="keer (ook los x?)">
+	<regexp>\b([0-9,.]+)( +)?(x)\b</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([0-9,.]+)( +)?(x)\b" regexp_replace="$1 keer"/></suggestion></message>
+</rule>
+
+<rule id="dgn" name="dagen">
+	<regexp>\b([0-9,.]*)(dg[n]?)\b</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([0-9,.]*)(dg[n]?)\b" regexp_replace="$1 dagen"/></suggestion></message>
+</rule>
+
+<rule id="wkn" name="weken">
+	<regexp>\b([0-9,.]*)(wk[n]?)\b</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([0-9,.]*)(wk[n]?)\b" regexp_replace="$1 weken"/></suggestion></message>
+</rule>
+
+<rule id="jrn" name="jaren">
+	<regexp>\b([0-9,.]*)(jr[n]?)\b</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([0-9,.]*)(jr[n]?)\b" regexp_replace="$1 jaren"/></suggestion></message>
+</rule>
+
+<rule id="vold" name="voldoende">
+	<regexp>\b(([Oo]n)?[Vv]old)([.]|\b)</regexp>
+	<message><suggestion><match no="1" regexp_match="\b(([Oo]n)?[Vv]old)([.]|\b)" regexp_replace="$1oende"/></suggestion></message>
+</rule>
+
+<rule id="si" name="sinds">
+	<regexp>\b([Ss]i([.]|\b))</regexp>
+	<message><suggestion>sinds</suggestion></message>
+</rule>
+
+<rule id="kl" name="klacht">
+	<regexp>([Kk]l([.]|\b))</regexp>
+	<message><suggestion>klacht</suggestion></message>
+</rule>
+
+<rule id="oef" name="oefen">
+	<regexp>\b([Oo]ef([.]|\b))</regexp>
+	<message><suggestion>oef</suggestion></message>
+</rule>
+
+<rule id="verw" name="verwijzing">
+	<regexp>\b([Vv]erw([.]|\b))</regexp>
+	<message><suggestion>verwijzing</suggestion></message>
+</rule>
+
+<rule id="nw" name="nieuw">
+	<regexp>\b([Nn]w([.]|\b))</regexp>
+	<message><suggestion>nieuw</suggestion></message>
+</rule>
+
+<!-- Latin used in medical jargon -->
+
+<rule id="dd" name="per dag">
+	<regexp>\b([0-9,.]+)?([Dd][.]?d)([0-9,.]+|\b)</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([0-9,.]+)?(d[.]?d)([0-9,.]+|\b)" regexp_replace="$1 per dag $3"/></suggestion></message>
+</rule>
+
+<rule id="bdd" name="tweemaal daags">
+	<regexp>\b([Bb][.]d[.]?d)([0-9,.]+|\b)</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([Bb][.]d[.]?d)([0-9,.]+|\b)" regexp_replace="tweemaal daags $2"/></suggestion></message>
+</rule>
+
+<rule id="tdd" name="driemaal daags">
+	<regexp>\b([Tt][.]d[.]?d)([0-9,.]+|\b)</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([Tt][.]d[.]?d)([0-9,.]+|\b)" regexp_replace="driemaal daags $2"/></suggestion></message>
+</rule>
+
+<rule id="qdd" name="viermaal daags">
+	<regexp>\b([Qq][.]d[.]?d)([0-9,.]+|\b)</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([Qq][.]d[.]?d)([0-9,.]+|\b)" regexp_replace="viermaal daags $2"/></suggestion></message>
+</rule>

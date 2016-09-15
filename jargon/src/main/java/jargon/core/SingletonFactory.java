@@ -20,11 +20,11 @@ public class SingletonFactory {
     	if (this.laMachine == null) {
     		synchronized (this) {
     			if (this.laMachine == null) {
-    				this.laMachine = new Socket(
+    				this.laMachine = new Socket( //"localhost", 12345
     					new Settings("lamachine").getAsString("host"),
     					new Settings("lamachine").getAsInt("port")
     				);
-    				this.laMachine.setKeepAlive(false);
+    				this.laMachine.setKeepAlive(true);
                 }
     		}
     	}
