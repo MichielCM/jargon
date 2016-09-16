@@ -158,7 +158,7 @@ public class Pipeline {
 					
 					//bytes > string > xml > folia
 					String response = responseBytes.toString("UTF-8").replaceFirst("READY$", "");
-					Console.log(response);
+					//Console.log(response);
 					this.source.folia = (Folia[]) ArrayUtils.addAll(this.source.folia, new Folia[] { (Folia) new XmlMapper().readValue(response, Folia.class) });
 				} else throw new IOException("No answer received");
 			}

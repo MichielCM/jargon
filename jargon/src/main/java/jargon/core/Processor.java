@@ -64,7 +64,7 @@ public class Processor extends BasicServlet {
 			.registerMimeTypes(FileType.TEXT, "application/json", "application/csv", "application/xml")
 			.upload(request);
 		
-		/*for (Upload up : uploader.getAll()) {
+		for (Upload up : uploader.getAll()) {
 			System.out.println(up.getType().toString());
 			System.out.println(up.getName());
 			
@@ -75,7 +75,7 @@ public class Processor extends BasicServlet {
 			
 			System.out.println(up.getContent());
 			System.out.println("---");
-		}*/
+		}
 		
 		Pipeline pipeline = new Pipeline(
 			new Source((uploader.get("text")).getContent().toString())
@@ -92,7 +92,7 @@ public class Processor extends BasicServlet {
 		if (uploader.get("frog") != null)
 			pipeline.frog(Segments.SENTENCES);
 		
-		super.replyInJSON(pipeline.getSource().folia);
+		super.replyInXML(pipeline.getSource().folia);
 		
 		/*System.out.println(uploader.get("foliafile").getContent());*/
 		

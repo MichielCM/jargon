@@ -1,0 +1,44 @@
+.foliaViewer div {
+	margin-bottom: 5px;
+}
+.foliaViewer span {
+	display: table-cell;
+}
+.foliaViewer span[data-dependency-class]::before {
+	content: attr(data-dependency-class);
+	font-variant: small-caps;
+	text-transform: lowercase;
+	font-size: 0.6em;
+	padding-right: 5px;
+}
+.foliaViewer span[title] {
+	border-bottom: 1px dotted black;
+}
+.foliaViewer .p::before {
+	content: "Paragraph";
+	font-variant: small-caps;
+	text-transform: lowercase;
+	font-size: 0.6em;
+	padding-right: 5px;
+}
+.foliaViewer .p {
+	border: 3px solid navy;
+}
+.foliaViewer .s::before {
+	content: "Sentence";
+	font-variant: small-caps;
+	text-transform: lowercase;
+	font-size: 0.6em;
+	padding-right: 5px;
+}
+.foliaViewer .s {
+	background-color: powderblue;
+	display: table;
+	border-collapse: separate;
+	border-spacing: 3px;
+	width: 100%;
+}
+.foliaViewer .w {
+	background-color: aliceblue;
+	display: table-row;
+}

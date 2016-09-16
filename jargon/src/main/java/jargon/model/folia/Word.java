@@ -32,4 +32,6 @@ public class Word {
 	@JsonIgnore
 	public Dependency[] dependants;
 	
+	public Alt alt;
+	
 }
