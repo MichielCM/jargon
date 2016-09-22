@@ -40,6 +40,16 @@
 	<message><suggestion>zo nodig</suggestion></message>
 </rule>
 
+<rule id="excl" name="exclusief">
+	<regexp>\b([Ee]xcl)([.]|\b)</regexp>
+	<message><suggestion>exclusief</suggestion></message>
+</rule>
+
+<rule id="incl" name="inclusief">
+	<regexp>\b([Ii]ncl)([.]|\b)</regexp>
+	<message><suggestion>inclusief</suggestion></message>
+</rule>
+
 <!-- Medical abbreviations -->
 
 <rule id="li" name="linker">
@@ -100,6 +110,11 @@
 <rule id="nw" name="nieuw">
 	<regexp>\b([Nn]w([.]|\b))</regexp>
 	<message><suggestion>nieuw</suggestion></message>
+</rule>
+
+<rule id="dgs" name="daags">
+	<regexp>\b([0-9,.]+)?([Dd]gs[.]?)([0-9,.]+|\b)</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([0-9,.]+)?([Dd]gs[.]?)([0-9,.]+|\b)" regexp_replace="$1 daags $3"/></suggestion></message>
 </rule>
 
 <!-- Latin used in medical jargon -->

@@ -52,6 +52,23 @@ $(document).ready(function() {
 		$(".foliaViewer").remove();
 		
 		$.each(
+			$.parseJSON(
+				$.ajax({
+					url: "process/natural/language",
+					method: "POST",
+					async: false,
+					processData: false,
+					contentType: false,
+					data: formData
+				}).responseText
+			),
+		function(i,o) {
+			$("body").append(
+				new FoliaViewer(o).view()
+			);
+		});
+		
+		/*$.each(
 			$($.parseXML(
 				$.ajax({
 					url: "process/natural/language",
@@ -66,7 +83,7 @@ $(document).ready(function() {
 			$("body").append(
 				new FoliaViewer(o).view()
 			);
-		});
+		});*/
 	}
 	
 	$("#submitButton").on("click", submitForm);
@@ -91,7 +108,7 @@ $(document).ready(function() {
 			<input type="checkbox" name="spellcheck" /> Spellcheck
 		</label>
 		<label>
-			<input type="checkbox" name="frog" checked="checked" disabled="disabled" /> Frog
+			<input type="checkbox" name="frog" checked="checked" /> Frog
 		</label>
 		
 		<input type="button" value="Process Natural Language" id="submitButton" />

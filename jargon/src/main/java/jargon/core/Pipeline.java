@@ -4,7 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.net.Socket;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -12,7 +16,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import jargon.core.Console;
 import jargon.model.Source;
-import jargon.model.folia.Folia;
+import jargon.model.folia.FoLiA;
 import jargon.utils.TimeOut;
 import jargon.utils.autocorrector.AutoCorrector;
 
@@ -125,7 +129,7 @@ public class Pipeline {
 		return this;
 	}
 	
-	private Folia[] _frog(Segments segmentType) {
+	private FoLiA[] _frog(Segments segmentType) {
 		PrintWriter printWriter = null;
 		InputStream inputStream = null;
 		
@@ -159,10 +163,13 @@ public class Pipeline {
 					//bytes > string > xml > folia
 					String response = responseBytes.toString("UTF-8").replaceFirst("READY$", "");
 					//Console.log(response);
-					this.source.folia = (Folia[]) ArrayUtils.addAll(this.source.folia, new Folia[] { (Folia) new XmlMapper().readValue(response, Folia.class) });
+					//this.source.folia = (FoLiA[]) ArrayUtils.addAll(this.source.folia, new FoLiA[] { (FoLiA) new XmlMapper().readValue(response, FoLiA.class) });
+					this.source.folia = (FoLiA[]) ArrayUtils.addAll(this.source.folia, new FoLiA[] {
+						(FoLiA) JAXBContext.newInstance(FoLiA.class).createUnmarshaller().unmarshal(new StringReader(response))
+					});
 				} else throw new IOException("No answer received");
 			}
-		} catch (IOException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+		} catch (IOException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -1,6 +1,6 @@
 package jargon.model;
 
-import jargon.model.folia.Folia;
+import jargon.model.folia.FoLiA;
 
 public class Source {
 
@@ -8,7 +8,7 @@ public class Source {
 	public String[] full;
 	public String[] sentences;
 	public String[] tokens;
-	public Folia[] folia;
+	public FoLiA[] folia;
 	
 	public Source(String text) {
 		this.input = text;

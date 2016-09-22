@@ -17,7 +17,7 @@ var FoliaViewer = function(xml) {
 							).append(
 								$.map($(s).children("w"), function(w) {
 									//word
-									return $("<div />", { "class" : "w", "id" : $(w).attr("id") }).append(
+									return $("<div />", { "class" : "w", "id" : $(w).attr("xml:id") }).append(
 										$("<span />").text($(w).children("t").text())
 									).append(
 										//lemma
@@ -73,16 +73,16 @@ var FoliaViewer = function(xml) {
 					});
 				}
 				
-				if ($.inArray($(w).attr("id"), depIDs) < 0) {
+				if ($.inArray($(w).attr("xml:id"), depIDs) < 0) {
 					foliaView.find(
-						"[id='".concat($(w).attr("id")).concat("']")
+						"[id='".concat($(w).attr("xml:id")).concat("']")
 					).children("span").eq(0).css(
 						"padding-left", "5px"
 					).attr(
 						"data-dependency-class", "ROOT"
 					);
 					
-					markDependants($(w).attr("id"));
+					markDependants($(w).attr("xml:id"));
 				}
 			});
 			

@@ -2,6 +2,8 @@ package jargon.core;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -13,6 +15,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -22,9 +28,11 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jargon.core.BasicServlet;
 import jargon.core.Pipeline.Segments;
 import jargon.model.Source;
-import jargon.model.folia.Feature;
-import jargon.model.folia.Folia;
-import jargon.model.folia.Sense;
+import jargon.model.folia.FoLiA;
+import jargon.model.folia.Text;
+import jargon.model.xfolia.Feature;
+import jargon.model.xfolia.Folia;
+import jargon.model.xfolia.Sense;
 import jargon.utils.upload.BinaryFile;
 import jargon.utils.upload.File;
 import jargon.utils.upload.File.FileType;
@@ -77,6 +85,22 @@ public class Processor extends BasicServlet {
 			System.out.println("---");
 		}
 		
+		/*try {
+			JAXBContext jc = JAXBContext.newInstance(FoLiA.class);
+			Unmarshaller unmarshaller = jc.createUnmarshaller();
+			FoLiA folia = (FoLiA) unmarshaller.unmarshal(new StringReader((String)uploader.get("foliafile").getContent()));
+			Console.log(((Text)folia.getTextOrSpeech().get(0)).getId());
+			
+			Marshaller marshaller = jc.createMarshaller();
+			StringWriter stringWriter = new StringWriter();
+	        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+	        marshaller.marshal(folia, stringWriter);
+	        super.reply(stringWriter.toString());
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
 		Pipeline pipeline = new Pipeline(
 			new Source((uploader.get("text")).getContent().toString())
 		);
@@ -92,7 +116,24 @@ public class Processor extends BasicServlet {
 		if (uploader.get("frog") != null)
 			pipeline.frog(Segments.SENTENCES);
 		
-		super.replyInXML(pipeline.getSource().folia);
+		//super.replyInJSON(pipeline.getSource().full);
+		//super.replyInXML(pipeline.getSource().folia);
+		
+		try {
+        	Marshaller marshaller = JAXBContext.newInstance(FoLiA.class).createMarshaller();
+    		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    		ArrayList<String> foliaFiles = new ArrayList<String>();
+        	for (FoLiA folia : pipeline.getSource().folia) {
+        		StringWriter stringWriter = new StringWriter();
+        		marshaller.marshal(folia, stringWriter);
+        		foliaFiles.add(stringWriter.toString());
+        	}
+            super.replyInJSON(foliaFiles);
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		/*System.out.println(uploader.get("foliafile").getContent());*/
 		
