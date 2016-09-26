@@ -22,6 +22,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -85,22 +86,6 @@ public class Processor extends BasicServlet {
 			System.out.println("---");
 		}
 		
-		/*try {
-			JAXBContext jc = JAXBContext.newInstance(FoLiA.class);
-			Unmarshaller unmarshaller = jc.createUnmarshaller();
-			FoLiA folia = (FoLiA) unmarshaller.unmarshal(new StringReader((String)uploader.get("foliafile").getContent()));
-			Console.log(((Text)folia.getTextOrSpeech().get(0)).getId());
-			
-			Marshaller marshaller = jc.createMarshaller();
-			StringWriter stringWriter = new StringWriter();
-	        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-	        marshaller.marshal(folia, stringWriter);
-	        super.reply(stringWriter.toString());
-		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		
 		Pipeline pipeline = new Pipeline(
 			new Source((uploader.get("text")).getContent().toString())
 		);
@@ -116,24 +101,26 @@ public class Processor extends BasicServlet {
 		if (uploader.get("frog") != null)
 			pipeline.frog(Segments.SENTENCES);
 		
-		//super.replyInJSON(pipeline.getSource().full);
-		//super.replyInXML(pipeline.getSource().folia);
+		super.reply(
+			Arrays.asList(
+				pipeline.getSource().folia
+			).stream().map(
+				(folia) -> super.toXML(folia)
+			).collect(
+				Collectors.toList()
+			).toArray(
+				new String[pipeline.getSource().folia.length]
+			), "application/json"
+		);
 		
-		try {
-        	Marshaller marshaller = JAXBContext.newInstance(FoLiA.class).createMarshaller();
-    		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    		ArrayList<String> foliaFiles = new ArrayList<String>();
-        	for (FoLiA folia : pipeline.getSource().folia) {
-        		StringWriter stringWriter = new StringWriter();
-        		marshaller.marshal(folia, stringWriter);
-        		foliaFiles.add(stringWriter.toString());
-        	}
-            super.replyInJSON(foliaFiles);
-		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		/*new RuleEngine(
+			jargon.core.RuleEngine.ResourceType.XLS, 
+			Arrays.asList(
+				uploader.getAll("rulesfile")).stream().map(
+					(file) -> ArrayUtils.toObject(((BinaryFile)file).getContent())
+				).collect(Collectors.toList()
+			).toArray(new Byte[uploader.getAll("rulesfile").length][])
+		).execute();*/
 		
 		/*System.out.println(uploader.get("foliafile").getContent());*/
 		

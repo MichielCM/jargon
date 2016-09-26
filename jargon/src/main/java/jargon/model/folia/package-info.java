@@ -5,5 +5,11 @@
 // Generated on: 2016.09.21 at 12:15:47 PM CEST 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://ilk.uvt.nl/folia", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(
+	namespace = "http://ilk.uvt.nl/folia",
+	xmlns = {
+        @javax.xml.bind.annotation.XmlNs(prefix = "", namespaceURI = "http://ilk.uvt.nl/folia"),
+    },
+	elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED
+)
 package jargon.model.folia;
