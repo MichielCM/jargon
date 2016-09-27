@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import static java.util.Comparator.comparing;
 
-import org.apache.commons.lang.StringUtils;
-
-import jargon.utils.JaroWinklerDistance;
+import org.apache.commons.lang3.StringUtils;
 
 public class FuzzyMatcher {
 
 	public enum ALGORITHM {
+		BINARY,
 		LEVENSHTEIN, 
 		JAROWINKLER
 	}
@@ -56,22 +55,22 @@ public class FuzzyMatcher {
 	public double matches(String original, String comparator, ALGORITHM algorithm) {
 		switch (algorithm) {
 			case LEVENSHTEIN:
-				return ((double)StringUtils.getLevenshteinDistance(original, comparator));
+				return StringUtils.getLevenshteinDistance(original, comparator);
 			case JAROWINKLER:
-				return (new JaroWinklerDistance().apply(original, comparator));
+				return StringUtils.getJaroWinklerDistance(original, comparator);
 			default:
-				return 0.0;
+				return (original.equals(comparator) ? 1.0 : 0.0);
 		}
 	}
 	
 	public boolean matches(String original, String comparator, ALGORITHM algorithm, double threshold) {
 		switch (algorithm) {
 			case LEVENSHTEIN:
-				return ((double)StringUtils.getLevenshteinDistance(original, comparator) >= threshold);
+				return (StringUtils.getLevenshteinDistance(original, comparator) >= threshold);
 			case JAROWINKLER:
-				return (new JaroWinklerDistance().apply(original, comparator) >= threshold);
+				return (StringUtils.getJaroWinklerDistance(original, comparator) >= threshold);
 			default:
-				return false;
+				return original.equals(comparator);
 		}
 	}
 	
