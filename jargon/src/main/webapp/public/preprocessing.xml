@@ -1,0 +1,4 @@
+<rule id="complicatie(s)" name="complicaties">
+	<regexp>\b(\D+)\((\D+)\)\b)</regexp>
+	<message><suggestion><match no="1" regexp_match="\b(\D+)\((\D+)\)\b)" regexp_replace="$1$2"/></suggestion></message>
+</rule>

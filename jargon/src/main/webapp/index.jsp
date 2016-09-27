@@ -102,13 +102,16 @@ $(document).ready(function() {
 			<textarea name="text">de meneer heeft last van zware hoofdpijn. en hij vindt dat naar.</textarea>
 		</label>
 		<label>
-			<input type="checkbox" name="unabbreviate" /> Unabbreviate
+			<input type="checkbox" name="unabbreviate" checked="checked" /> Unabbreviate
 		</label>
 		<label>
-			<input type="checkbox" name="spellcheck" /> Spellcheck
+			<input type="checkbox" name="spellcheck" checked="checked" /> Spellcheck
 		</label>
 		<label>
-			<input type="checkbox" name="frog" checked="checked" /> Frog
+			<input type="checkbox" name="frog" checked="checked" disabled="disabled" /> Frog
+		</label>
+		<label>
+			<input type="checkbox" name="annotate" checked="checked" /> Annotate
 		</label>
 		
 		<input type="button" value="Process Natural Language" id="submitButton" />

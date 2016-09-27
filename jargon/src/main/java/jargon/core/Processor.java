@@ -20,6 +20,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
@@ -31,9 +32,6 @@ import jargon.core.Pipeline.Segments;
 import jargon.model.Source;
 import jargon.model.folia.FoLiA;
 import jargon.model.folia.Text;
-import jargon.model.xfolia.Feature;
-import jargon.model.xfolia.Folia;
-import jargon.model.xfolia.Sense;
 import jargon.utils.upload.BinaryFile;
 import jargon.utils.upload.File;
 import jargon.utils.upload.File.FileType;
@@ -101,6 +99,9 @@ public class Processor extends BasicServlet {
 		if (uploader.get("frog") != null)
 			pipeline.frog(Segments.SENTENCES);
 		
+		if (uploader.get("annotate") != null)
+			pipeline.annotate();
+		
 		super.reply(
 			Arrays.asList(
 				pipeline.getSource().folia
@@ -112,6 +113,8 @@ public class Processor extends BasicServlet {
 				new String[pipeline.getSource().folia.length]
 			), "application/json"
 		);
+		
+		
 		
 		/*new RuleEngine(
 			jargon.core.RuleEngine.ResourceType.XLS, 

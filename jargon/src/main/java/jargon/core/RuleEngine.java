@@ -104,6 +104,18 @@ public class RuleEngine {
 		}
 	}
 	
+	public RuleEngine(ResourceType type, byte[]... resources) {
+		this();
+		for (byte[] resource : resources) {
+			switch (type) {
+				case XLS:
+					this.addRules(getRulesFromSpreadSheet(resource));
+				default:
+					break;
+			}
+		}
+	}
+	
 	/**
 	 * Sets value of global variable.
 	 * @param id		id of global variable.
@@ -224,7 +236,7 @@ public class RuleEngine {
 	
 	private void addRules(String... rules) {
 		for (String rule : rules) {
-			System.out.println(rule);
+			//System.out.println(rule);
 			try {
 				File fTemp = File.createTempFile("drools",".drl");
 				fTemp.deleteOnExit();

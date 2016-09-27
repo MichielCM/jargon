@@ -20,8 +20,13 @@
 	<message><suggestion>in verband met</suggestion></message>
 </rule>
 
+<rule id="tgv" name="ten gevolge van">
+	<regexp>\b([Tt]gv|[Tt][.]g[.]v)([.]|\b)</regexp>
+	<message><suggestion>ten gevolge van</suggestion></message>
+</rule>
+
 <rule id="mn" name="met name">
-	<regexp>\b([Mm][.]n([.]|\b))</regexp>
+	<regexp>\b([Mm][.]?n([.]|\b))</regexp>
 	<message><suggestion>met name</suggestion></message>
 </rule>
 
@@ -50,6 +55,11 @@
 	<message><suggestion>inclusief</suggestion></message>
 </rule>
 
+<rule id="evt" name="eventueel">
+	<regexp>\b([Ee]vt)([.]|\b)</regexp>
+	<message><suggestion>eventueel</suggestion></message>
+</rule>
+
 <!-- Medical abbreviations -->
 
 <rule id="li" name="linker">
@@ -68,18 +78,18 @@
 </rule>
 
 <rule id="dgn" name="dagen">
-	<regexp>\b([0-9,.]*)(dg[n]?)\b</regexp>
-	<message><suggestion><match no="1" regexp_match="\b([0-9,.]*)(dg[n]?)\b" regexp_replace="$1 dagen"/></suggestion></message>
+	<regexp>\b([0-9,.]*)(d(?:g|gn)?)\b</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([0-9,.]*)(d(?:g|gn)?)\b" regexp_replace="$1 dagen"/></suggestion></message>
 </rule>
 
 <rule id="wkn" name="weken">
-	<regexp>\b([0-9,.]*)(wk[n]?)\b</regexp>
-	<message><suggestion><match no="1" regexp_match="\b([0-9,.]*)(wk[n]?)\b" regexp_replace="$1 weken"/></suggestion></message>
+	<regexp>\b([0-9,.]*)(w(?:k|kn)?)\b</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([0-9,.]*)(w(?:k|kn)?)\b" regexp_replace="$1 weken"/></suggestion></message>
 </rule>
 
 <rule id="jrn" name="jaren">
-	<regexp>\b([0-9,.]*)(jr[n]?)\b</regexp>
-	<message><suggestion><match no="1" regexp_match="\b([0-9,.]*)(jr[n]?)\b" regexp_replace="$1 jaren"/></suggestion></message>
+	<regexp>\b([0-9,.]*)(j(?:r|rn)?)\b</regexp>
+	<message><suggestion><match no="1" regexp_match="\b([0-9,.]*)(j(?:r|rn)?)\b" regexp_replace="$1 jaren"/></suggestion></message>
 </rule>
 
 <rule id="vold" name="voldoende">
@@ -137,4 +147,66 @@
 <rule id="qdd" name="viermaal daags">
 	<regexp>\b([Qq][.]d[.]?d)([0-9,.]+|\b)</regexp>
 	<message><suggestion><match no="1" regexp_match="\b([Qq][.]d[.]?d)([0-9,.]+|\b)" regexp_replace="viermaal daags $2"/></suggestion></message>
+</rule>
+
+<rule id="alc" name="alcohol">
+	<regexp>\b([Aa]lc([.]|\b))</regexp>
+	<message><suggestion>alcohol</suggestion></message>
+</rule>
+
+<!-- months -->
+
+<rule id="jan" name="januari">
+	<regexp>\b([Jj]an([.]|\b))</regexp>
+	<message><suggestion>januari</suggestion></message>
+</rule>
+
+<rule id="feb" name="februari">
+	<regexp>\b([Ff]eb[r]?([.]|\b))</regexp>
+	<message><suggestion>februari</suggestion></message>
+</rule>
+
+<rule id="mrt" name="maart">
+	<regexp>\b([Mm]rt([.]|\b))</regexp>
+	<message><suggestion>maart</suggestion></message>
+</rule>
+
+<rule id="apr" name="april">
+	<regexp>\b([Aa]pr([.]|\b))</regexp>
+	<message><suggestion>april</suggestion></message>
+</rule>
+
+<rule id="jun" name="juni">
+	<regexp>\b([Jj]un([.]|\b))</regexp>
+	<message><suggestion>juni</suggestion></message>
+</rule>
+
+<rule id="jul" name="juli">
+	<regexp>\b([Jj]ul([.]|\b))</regexp>
+	<message><suggestion>juli</suggestion></message>
+</rule>
+
+<rule id="aug" name="augustus">
+	<regexp>\b([Aa]ug([.]|\b))</regexp>
+	<message><suggestion>augustus</suggestion></message>
+</rule>
+
+<rule id="sep" name="september">
+	<regexp>\b([Ss]ep[t]?([.]|\b))</regexp>
+	<message><suggestion>september</suggestion></message>
+</rule>
+
+<rule id="okt" name="oktober">
+	<regexp>\b([Oo]kt([.]|\b))</regexp>
+	<message><suggestion>oktober</suggestion></message>
+</rule>
+
+<rule id="nov" name="november">
+	<regexp>\b([Nn]ov([.]|\b))</regexp>
+	<message><suggestion>november</suggestion></message>
+</rule>
+
+<rule id="dec" name="december">
+	<regexp>\b([Dd]ec([.]|\b))</regexp>
+	<message><suggestion>december</suggestion></message>
 </rule>

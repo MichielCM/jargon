@@ -1,15 +1,21 @@
 package jargon.core;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -17,8 +23,17 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jargon.core.Console;
 import jargon.model.Source;
 import jargon.model.folia.FoLiA;
+import jargon.model.folia.FoliaUtils;
+import jargon.model.folia.P;
+import jargon.model.folia.S;
+import jargon.model.folia.Text;
+import jargon.model.folia.W;
+import jargon.utils.JAXBUtils;
 import jargon.utils.TimeOut;
 import jargon.utils.autocorrector.AutoCorrector;
+import jargon.utils.fuzzymatcher.CSVResource;
+import jargon.utils.fuzzymatcher.FuzzyMatcher;
+import jargon.core.RuleEngine.ResourceType;
 
 public class Pipeline {
 
@@ -175,6 +190,44 @@ public class Pipeline {
 		}
 		
 		return this.source.folia;
+	}
+	
+	public Pipeline annotate() {
+		this._annotate();
+		return this;
+	}
+	
+	public void _annotate() {
+		Console.log(FoliaUtils.getWords(this.source.folia[0]).get(0).getClazz());
+		
+		try {
+			for (FoLiA folia : this.source.folia) {
+				new RuleEngine(
+					ResourceType.XLS,
+					IOUtils.toByteArray(
+						this.getClass().getClassLoader().getResourceAsStream(
+							"annotation.xls"
+						)
+					)
+				).set(
+					"auxMatcher", new FuzzyMatcher(
+						new CSVResource(
+							new File(
+								this.getClass().getClassLoader().getResource(
+									"aux-verbs.csv"
+								).getFile()
+							),
+							new String[] { "id", "use"}, "id", "id", System.getProperty("line.separator"), ","
+						)
+					)
+				).add(
+					FoliaUtils.getWords(folia).toArray()
+				).execute();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }
