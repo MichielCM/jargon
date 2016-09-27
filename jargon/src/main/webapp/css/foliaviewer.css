@@ -1,8 +1,12 @@
-.foliaViewer div {
-	margin-bottom: 5px;
+.foliaViewer > div {
+	margin-bottom: 15px;
 }
 .foliaViewer span {
 	display: table-cell;
+	width: 17.5%;
+}
+.foliaViewer span:first-child {
+	width: 30%;
 }
 .foliaViewer span[data-dependency-class]::before {
 	content: attr(data-dependency-class);
@@ -14,22 +18,34 @@
 .foliaViewer span[title] {
 	border-bottom: 1px dotted black;
 }
-.foliaViewer .p::before {
+.foliaViewer span.custom {
+	background-color: lavender;
+}
+/*.foliaViewer .p::before {
 	content: "Paragraph";
 	font-variant: small-caps;
 	text-transform: lowercase;
 	font-size: 0.6em;
 	padding-right: 5px;
-}
+}*/
 .foliaViewer .p {
 	border: 3px solid navy;
 }
-.foliaViewer .s::before {
+.foliaViewer .p > span.token {
+	padding: 3px;
+}
+/*.foliaViewer .s::before {
 	content: "Sentence";
 	font-variant: small-caps;
 	text-transform: lowercase;
 	font-size: 0.6em;
 	padding-right: 5px;
+}*/
+.foliaViewer .s > span {
+	font-variant: small-caps;
+	text-transform: lowercase;
+	font-size: 0.6em;
+	text-align: center;
 }
 .foliaViewer .s {
 	background-color: powderblue;

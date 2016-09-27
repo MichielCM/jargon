@@ -7,13 +7,23 @@ var FoliaViewer = function(xml) {
 			var foliaView = $("<div />", { "class" : "foliaViewer" }).append(
 				$.map($(xmlDoc).find("text > p"), function(p) {
 					//paragraph
-					return $("<div />", { "class" : "p" }).text(
-						$(p).children("t").text()
+					return $("<div />", { "class" : "p" }).append(
+						$("<span />", { "class" : "token" }).text(
+							$(p).children("t").text()
+						)
 					).append(
 						$.map($(p).children("s"), function(s) {
 							//sentence
-							return $("<div />", { "class" : "s" }).text(
-								$(s).children("t").text()
+							return $("<div />", { "class" : "s" }).append(
+								$("<span />").text("Dependency Tree")
+							).append(
+								$("<span />").text("Lemma")
+							).append(
+								$("<span />").text("Morphemes")
+							).append(
+								$("<span />").text("Part of Speech")
+							).append(
+								$("<span />").text("Verb Types")
 							).append(
 								$.map($(s).children("w"), function(w) {
 									//word
@@ -41,6 +51,13 @@ var FoliaViewer = function(xml) {
 														if ($(feat).attr("class"))
 															return $(feat).attr("subset").concat(": ").concat($(feat).attr("class"));
 										}).join("\n"))
+									).append(
+										//sense; verb type
+										$("<span />", { "class" : "custom" }).text(
+											$.map($(w).find("sense > feat[subset='verb-types']"), function(feat) {
+												return $(feat).attr("class");
+											}).join(", ")
+										)
 									)
 								})
 							);

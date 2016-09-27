@@ -198,8 +198,6 @@ public class Pipeline {
 	}
 	
 	public void _annotate() {
-		Console.log(FoliaUtils.getWords(this.source.folia[0]).get(0).getClazz());
-		
 		try {
 			for (FoLiA folia : this.source.folia) {
 				new RuleEngine(
@@ -215,6 +213,17 @@ public class Pipeline {
 							new File(
 								this.getClass().getClassLoader().getResource(
 									"aux-verbs.csv"
+								).getFile()
+							),
+							new String[] { "id", "use"}, "id", "id", System.getProperty("line.separator"), ","
+						)
+					)
+				).set(
+					"copMatcher", new FuzzyMatcher(
+						new CSVResource(
+							new File(
+								this.getClass().getClassLoader().getResource(
+									"cop-verbs.csv"
 								).getFile()
 							),
 							new String[] { "id", "use"}, "id", "id", System.getProperty("line.separator"), ","
