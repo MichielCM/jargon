@@ -32,6 +32,7 @@ import jargon.core.Pipeline.Segments;
 import jargon.model.Source;
 import jargon.model.folia.FoLiA;
 import jargon.model.folia.Text;
+import jargon.model.folia.W;
 import jargon.utils.upload.BinaryFile;
 import jargon.utils.upload.File;
 import jargon.utils.upload.File.FileType;
@@ -95,12 +96,19 @@ public class Processor extends BasicServlet {
 			pipeline.spellcheck(Segments.FULL);
 		
 		pipeline.segmentize(Segments.SENTENCES);
+		pipeline.clean(Segments.SENTENCES);
 		
 		if (uploader.get("frog") != null)
 			pipeline.frog(Segments.SENTENCES);
 		
+		//Console.log(super.toXML(pipeline.getSource().folia[0]));
+		//Console.log(pipeline.getSource().folia.length);
+		
 		if (uploader.get("annotate") != null)
 			pipeline.annotate();
+		
+		if (uploader.get("summarize") != null)
+			pipeline.summarize();
 		
 		super.reply(
 			Arrays.asList(

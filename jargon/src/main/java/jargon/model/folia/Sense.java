@@ -124,6 +124,12 @@ public class Sense {
     @XmlAnyAttribute
     private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
+    public Sense() {}
+    
+    public Sense(String clazz) {
+    	this.clazz = clazz;
+    }
+    
     /**
      * Gets the value of the comment property.
      * 

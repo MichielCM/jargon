@@ -23,12 +23,16 @@ var FoliaViewer = function(xml) {
 							).append(
 								$("<span />").text("Part of Speech")
 							).append(
-								$("<span />").text("Verb Types")
+								$("<span />").text("Sense")
 							).append(
 								$.map($(s).children("w"), function(w) {
 									//word
 									return $("<div />", { "class" : "w", "id" : $(w).attr("xml:id") }).append(
-										$("<span />").text($(w).children("t").text())
+										$("<span />").text($(w).children("t").text()).addClass(
+											($(w).find("sense[class='keyword-extraction'] > feat[class='keyword']").length > 0 ? "keyword" : null)
+										).addClass(
+											($(w).find("sense[class='polarity'] > feat[class='negative']").length > 0 ? "negative" : null)
+										)
 									).append(
 										//lemma
 										$("<span />").text(
@@ -52,12 +56,21 @@ var FoliaViewer = function(xml) {
 															return $(feat).attr("subset").concat(": ").concat($(feat).attr("class"));
 										}).join("\n"))
 									).append(
-										//sense; verb type
+										//sense
 										$("<span />", { "class" : "custom" }).text(
-											$.map($(w).find("sense > feat[subset='verb-types']"), function(feat) {
-												return $(feat).attr("class");
+											//$.map($(s).find("dependencies > dependency > feat[subset='relation'][class='attribute']").closest("dependency").find("hd > wref"), function(wref) {
+											$.map($(s).find("dependencies > dependency > feat[subset='relation'][class='attribute']").closest("dependency").find("feat[subset='inheritedBy']"), function(feat) {
+												//if ($(wref).attr("id") === $(w).attr("xml:id")) {
+												if ($(feat).attr("class") === $(w).attr("xml:id")) {
+													return $(feat).closest("dependency").find("dep > wref").attr("t");
+												}
 											}).join(", ")
 										)
+										/*$("<span />", { "class" : "custom" }).text(
+											$.map($(w).find("sense > feat"), function(feat) {
+												return $(feat).attr("subset").concat(": ").concat($(feat).attr("class"));
+											}).join(", ")
+										)*/
 									)
 								})
 							);

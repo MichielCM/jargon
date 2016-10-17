@@ -1,5 +1,6 @@
 package jargon.utils.autocorrector;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import org.languagetool.rules.Rule;
 import org.languagetool.rules.RuleMatch;
 
 import jargon.core.Console;
+import jargon.utils.csvreader.CSVReader;
+import jargon.utils.csvreader.CSVRecord;
 
 public class AutoCorrector {
 
@@ -31,6 +34,30 @@ public class AutoCorrector {
 			//Console.log(rule.getCategory().getId());
 			this.jLanguageTool.disableCategory(rule.getCategory().getId());
 		}
+	}
+	
+	/** Replaces regular expressions in text string specified by categories.
+	 * @param text				String to check.
+	 * @param categories		Array of categories that will be checked. Files will be loaded as CSV files from the resource folder.
+	 * @return					Corrected string.
+	 */
+	public String autoCorrectRegEx(String text, String... categories) {
+		for (String category : categories) {
+			CSVReader csvReader = new CSVReader(
+				new File(
+					this.getClass().getClassLoader().getResource(
+						category.concat(".csv")
+					).getFile()
+				),
+				new String[] { "id", "find", "replace"}, "id", System.getProperty("line.separator"), "&"
+			);
+			
+			for (CSVRecord csvRecord : csvReader.read()) {
+				text = text.replaceAll(csvRecord.get("find"), csvRecord.get("replace"));
+			}
+		}
+		
+		return text;
 	}
 	
 	/** Runs JLanguageTool.check on a string and automatically incorporates (first) suggestions.

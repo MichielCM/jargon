@@ -99,7 +99,7 @@ $(document).ready(function() {
 	<form action="">
 		<label>
 			<!--Query Text:	<input type="text" name="text" value="de meneer heeft last van zware hoofdpijn. en hij vindt dat naar." />-->
-			<textarea name="text">de meneer heeft last van zware hoofdpijn. en hij vindt dat naar.</textarea>
+			<textarea name="text">lijdt geen zware hoofdpijn</textarea>
 		</label>
 		<label>
 			<input type="checkbox" name="unabbreviate" checked="checked" /> Unabbreviate
@@ -112,6 +112,9 @@ $(document).ready(function() {
 		</label>
 		<label>
 			<input type="checkbox" name="annotate" checked="checked" /> Annotate
+		</label>
+		<label>
+			<input type="checkbox" name="summarize" checked="checked" /> Summarize
 		</label>
 		
 		<input type="button" value="Process Natural Language" id="submitButton" />

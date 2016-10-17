@@ -236,7 +236,7 @@ public class RuleEngine {
 	
 	private void addRules(String... rules) {
 		for (String rule : rules) {
-			//System.out.println(rule);
+			System.out.println(rule);
 			try {
 				File fTemp = File.createTempFile("drools",".drl");
 				fTemp.deleteOnExit();

@@ -11,7 +11,8 @@ public class FuzzyMatcher {
 	public enum ALGORITHM {
 		BINARY,
 		LEVENSHTEIN, 
-		JAROWINKLER
+		JAROWINKLER,
+		REGEX
 	}
 	
 	private Resource comparators;
@@ -58,6 +59,8 @@ public class FuzzyMatcher {
 				return StringUtils.getLevenshteinDistance(original, comparator);
 			case JAROWINKLER:
 				return StringUtils.getJaroWinklerDistance(original, comparator);
+			case REGEX:
+				return (original.matches(comparator) ? 1.0 : 0.0);
 			default:
 				return (original.equals(comparator) ? 1.0 : 0.0);
 		}
@@ -69,6 +72,8 @@ public class FuzzyMatcher {
 				return (StringUtils.getLevenshteinDistance(original, comparator) >= threshold);
 			case JAROWINKLER:
 				return (StringUtils.getJaroWinklerDistance(original, comparator) >= threshold);
+			case REGEX:
+				return original.matches(comparator);
 			default:
 				return original.equals(comparator);
 		}

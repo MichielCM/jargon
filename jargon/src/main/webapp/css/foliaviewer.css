@@ -3,9 +3,12 @@
 }
 .foliaViewer span {
 	display: table-cell;
-	width: 17.5%;
+	width: 13;
 }
 .foliaViewer span:first-child {
+	width: 30%;
+}
+.foliaViewer span:last-child {
 	width: 30%;
 }
 .foliaViewer span[data-dependency-class]::before {
@@ -57,4 +60,11 @@
 .foliaViewer .w {
 	background-color: aliceblue;
 	display: table-row;
+}
+.foliaViewer .keyword {
+	font-weight: bold;
+	color: green;
+}
+.foliaViewer .negative {
+	color: red;
 }

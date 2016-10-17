@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import jargon.core.Console;
+
 public class CSVReader {
 
 	private ArrayList<CSVRecord> recordsList;

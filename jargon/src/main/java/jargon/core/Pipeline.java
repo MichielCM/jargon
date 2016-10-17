@@ -8,9 +8,6 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -18,17 +15,10 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-
 import jargon.core.Console;
 import jargon.model.Source;
 import jargon.model.folia.FoLiA;
 import jargon.model.folia.FoliaUtils;
-import jargon.model.folia.P;
-import jargon.model.folia.S;
-import jargon.model.folia.Text;
-import jargon.model.folia.W;
-import jargon.utils.JAXBUtils;
 import jargon.utils.TimeOut;
 import jargon.utils.autocorrector.AutoCorrector;
 import jargon.utils.fuzzymatcher.CSVResource;
@@ -71,7 +61,42 @@ public class Pipeline {
 			default:
 				return null;
 		}
+	}
+	
+	public Pipeline clean(Segments segmentType) {
+		try {
+			this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).set(this.source, this._clean(segmentType));
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
+		return this;
+	}
+	
+	private String[] _clean(Segments segmentType) {
+		try {
+			ArrayList<String> segments = new ArrayList<String>();
+			
+			for (String segment : (String[]) this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).get(this.source)) {
+				segment = segment.trim();
+				
+				if (segment.substring(0,1).equals(segment.substring(0,1).toUpperCase()))
+					segment = segment.substring(0,1).toLowerCase().concat(segment.substring(1));
+				
+				if (segment.substring(segment.length() - 1).matches("[.,—?!;]"))
+					segment = segment.substring(0, segment.length() - 1);
+				
+				segments.add(segment);
+			}
+			
+			return segments.toArray(new String[segments.size()]);
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	public Pipeline unabbreviate(Segments segmentType) {
@@ -91,9 +116,9 @@ public class Pipeline {
 			
 			for (int i=0; i<segments.length; i++) {
 				AutoCorrector autoCorrector = new AutoCorrector();
-				segments[i] = autoCorrector.autoCorrect(segments[i], "UNABBREVIATION");
+				segments[i] = autoCorrector.autoCorrectRegEx(segments[i], "unabbreviation");
+				//segments[i] = autoCorrector.autoCorrect(segments[i], "UNABBREVIATION");
 			}
-			
 			return segments;
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			// TODO Auto-generated catch block
@@ -215,7 +240,7 @@ public class Pipeline {
 									"aux-verbs.csv"
 								).getFile()
 							),
-							new String[] { "id", "use"}, "id", "id", System.getProperty("line.separator"), ","
+							new String[] { "id" }, "id", "id", System.getProperty("line.separator"), ","
 						)
 					)
 				).set(
@@ -231,6 +256,72 @@ public class Pipeline {
 					)
 				).add(
 					FoliaUtils.getWords(folia).toArray()
+				).execute();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public Pipeline summarize() {
+		this._summarize();
+		return this;
+	}
+	
+	public void _summarize() {
+		try {
+			for (FoLiA folia : this.source.folia) {
+				new RuleEngine(
+					ResourceType.XLS,
+					IOUtils.toByteArray(
+						this.getClass().getClassLoader().getResourceAsStream(
+							"keyword-extraction-n-ww.xls"
+						)
+					)
+				).set(
+					"folia", folia
+				).add(
+					FoliaUtils.getWords(folia).toArray()
+				).execute();
+				
+				new RuleEngine(
+					ResourceType.XLS,
+					IOUtils.toByteArray(
+						this.getClass().getClassLoader().getResourceAsStream(
+							"keyword-extraction-adj.xls"
+						)
+					)
+				).set(
+					"folia", folia
+				).add(
+					FoliaUtils.getWords(folia).toArray()
+				).execute();
+				
+				new RuleEngine(
+					ResourceType.XLS,
+					IOUtils.toByteArray(
+						this.getClass().getClassLoader().getResourceAsStream(
+							"summarization.xls"
+						)
+					)
+				).set(
+					"folia", folia
+				).set(
+					"occurrenceMatcher", new FuzzyMatcher(
+						new CSVResource(
+							new File(
+								this.getClass().getClassLoader().getResource(
+									"occurrences.csv"
+								).getFile()
+							),
+							new String[] { "id" }, "id", "id", System.getProperty("line.separator"), "&"
+						)
+					)
+				).add(
+					FoliaUtils.getWords(folia).toArray()
+				).add(
+					FoliaUtils.getDependencies(folia).toArray()
 				).execute();
 			}
 		} catch (IOException e) {
