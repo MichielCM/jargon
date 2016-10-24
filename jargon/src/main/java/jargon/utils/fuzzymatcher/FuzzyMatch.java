@@ -8,13 +8,14 @@ public class FuzzyMatch {
 	private String comparator;
 	private ALGORITHM algorithm;
 	private double similarity;
+	private Record record;
 	
-	
-	public FuzzyMatch(String original, String comparator, ALGORITHM algorithm, double similarity) {
+	public FuzzyMatch(String original, String comparator, ALGORITHM algorithm, double similarity, Record record) {
 		this.original = original;
 		this.comparator = comparator;
 		this.algorithm = algorithm;
 		this.similarity = similarity;
+		this.record = record;
 	}
 
 	public String getOriginal() {
@@ -31,6 +32,14 @@ public class FuzzyMatch {
 	
 	public double getSimilarity() {
 		return this.similarity;
+	}
+
+	public Record getRecord() {
+		return record;
+	}
+
+	public void setRecord(Record record) {
+		this.record = record;
 	}
 	
 }

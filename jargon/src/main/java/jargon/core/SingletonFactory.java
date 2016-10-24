@@ -9,6 +9,7 @@ public class SingletonFactory {
 	static private SingletonFactory singletonFactory = new SingletonFactory();
 	
 	private Socket laMachine;
+	private FileManager fileManager;
 	
 	private SingletonFactory() {}
 	 
@@ -30,6 +31,17 @@ public class SingletonFactory {
     	}
     	
     	return this.laMachine;
+    }
+    
+    public FileManager getFileManager() {
+    	if (this.fileManager == null) {
+    		synchronized (this) {
+    			if (this.fileManager == null)
+    				this.fileManager = new FileManager();
+    		}
+    	}
+    	
+    	return this.fileManager;
     }
 	
 }

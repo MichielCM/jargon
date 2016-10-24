@@ -1,6 +1,7 @@
 var FoliaViewer = function(xml) {
 	var xmlDoc = ($.isXMLDoc(xml) ? xml : $.parseXML(xml))
 	console.log(xmlDoc);
+	console.log(xml);
 	
 	return {
 		view: function() {
@@ -22,6 +23,8 @@ var FoliaViewer = function(xml) {
 								$("<span />").text("Morphemes")
 							).append(
 								$("<span />").text("Part of Speech")
+							).append(
+								$("<span />").text("Attributes")
 							).append(
 								$("<span />").text("Sense")
 							).append(
@@ -66,12 +69,15 @@ var FoliaViewer = function(xml) {
 												}
 											}).join(", ")
 										)
-										/*$("<span />", { "class" : "custom" }).text(
+									).append(
+										$("<span />", { "class" : "custom" }).text(
 											$.map($(w).find("sense > feat"), function(feat) {
 												return $(feat).attr("subset").concat(": ").concat($(feat).attr("class"));
 											}).join(", ")
-										)*/
-									)
+										)
+									).data("w",w).on("dblclick", function() {
+										console.log($(this).data("w"));
+									})
 								})
 							);
 						})
@@ -80,26 +86,31 @@ var FoliaViewer = function(xml) {
 			);
 			
 			//dependencies
-			var depIDs = $.map($(xmlDoc).find("text > p > s > dependencies > dependency"), function(dependency) {
-				return $(dependency).children("dep").children("wref").attr("id");
+			var depIDs = $.map($(xmlDoc).find("text > p > s > dependencies > dependency > dep > wref"), function(wref) {
+				return $(wref).attr("id");
 			});
 			
 			$.map($(xmlDoc).find("text > p > s > w"), function(w) {
 				var markDependants = function(id) {
 					$.map($(xmlDoc).find("text > p > s > dependencies > dependency > hd > wref[id='".concat(id).concat("']")), function(wref) {
-						foliaView.find(
-							"[id='".concat($(wref).closest("dependency").children("dep").children("wref").attr("id")).concat("']")
-						).children("span").eq(0).css(
-							"padding-left",
-							parseInt(
-								foliaView.find(
-									"[id='".concat(id).concat("']")
-								).children("span").eq(0).css("padding-left").replace(/\D+/, "")
-							) + 15 + "px"
-						).attr(
-							"data-dependency-class", $(wref).closest("dependency").attr("class")
-						);
-						markDependants($(wref).closest("dependency").children("dep").children("wref").attr("id"));
+						$.each($(wref).closest("dependency").children("dep").children("wref"), function(i,o) {
+							foliaView.find(
+								"[id='".concat($(o).attr("id")).concat("']")
+							).children("span").eq(0).css(
+								"padding-left",
+								parseInt(
+									foliaView.find(
+										"[id='".concat(id).concat("']")
+									).children("span").eq(0).css("padding-left").replace(/\D+/, "")
+								) + 15 + "px"
+							).attr(
+								"data-dependency-class", $(wref).closest("dependency").attr("class")
+							);
+						});
+						
+						$.each($(wref).closest("dependency").children("dep").children("wref"), function(i,o) {
+							markDependants($(o).attr("id"));
+						});
 					});
 				}
 				

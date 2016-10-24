@@ -21,30 +21,43 @@ public final class FoliaUtils {
 		return (ArrayList<Dependency>) JXPathContext.newContext(folia).getValue("text/p/s/dependencies/dependency");
 	}
 	
-	public static boolean matches(Object parent, String xPathQuery, String match) {
+	public static boolean equals(Object parent, String xPathQuery, String match) {
+		//Console.log(parent, xPathQuery, match);
 		try {
-			return ((String)JXPathContext.newContext(parent).getValue(xPathQuery)).equals(match);
-		} catch(JXPathNotFoundException e) {
+			JXPathContext context = JXPathContext.newContext(parent);
+			context.setLenient(true);
+			return ((String)context.getValue(xPathQuery)).equals(match);
+		} catch(NullPointerException e) {
+			return false;
+		}
+	}
+	
+	public static boolean matches(Object parent, String xPathQuery, String match) {
+		//Console.log(parent, xPathQuery, match);
+		try {
+			JXPathContext context = JXPathContext.newContext(parent);
+			context.setLenient(true);
+			return ((String)context.getValue(xPathQuery)).matches(match);
+		} catch(NullPointerException e) {
 			return false;
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static String getValue(Object parent, String xPathQuery) {
-		//try {
-			Console.log(JXPathContext.newContext(parent).getValue(xPathQuery));
-		
-		return ((ArrayList<String>)JXPathContext.newContext(parent).getValue(xPathQuery)).get(0);
-		/*} catch(JXPathNotFoundException e) {
-			return null;
-		}*/
+	public static Object getValue(Object parent, String xPathQuery) {
+		//Console.log(JXPathContext.newContext(parent).getValue(xPathQuery));
+		JXPathContext context = JXPathContext.newContext(parent);
+		context.setLenient(true);
+		try {
+			return ((ArrayList<String>)context.getValue(xPathQuery)).get(0);
+		} catch(ClassCastException | NullPointerException e) {
+			try {
+				return (String)context.getValue(xPathQuery);
+			} catch(ClassCastException f) {
+				return (Object)context.getValue(xPathQuery);
+			}
+		}
 	}
-	
-/*((String)folia.getText().get(0).getP().get(0).getS().get(0).getT().get(0).getContent().get(0)).substring(
-((String)folia.getText().get(0).getP().get(0).getS().get(0).getT().get(0).getContent().get(0)).indexOf(
-(String)signifier.getT().get(0).getContent().get(0)
-)
-)*/
 	
 	@SuppressWarnings("unchecked")
 	public static W[] getDescendantsByLemma(JXPathContext context, W parent, String lemma, String exclusionQuery, ArrayList<W> matches) {
@@ -169,6 +182,33 @@ public final class FoliaUtils {
 			//ancestor.getId()
 			"@id='".concat(ancestor.getId()).concat("'")
 		) != null);
+	}
+	
+	public static W getPrevious(FoLiA folia, W w) {
+		JXPathContext context = JXPathContext.newContext(folia);
+		context.setLenient(true);
+		//Console.log(context.getValue("//w[id='".concat(w.getId()).concat("']/preceding-sibling::w[1]/lemma/@clazz")));
+		return (W)context.getValue("//w[id='".concat(w.getId()).concat("']/preceding-sibling::w[1]"));
+	}
+	
+	public static W getPrevious(FoLiA folia, W w, String selector, String excluder) {
+		while (getValue(w, selector) == null) {
+			w = getPrevious(folia, w);
+			
+			if (w == null || getValue(w, excluder) != null) {
+				w = null;
+				break;
+			}
+		}
+		
+		return w;
+	}
+	
+	public static W getNext(FoLiA folia, W w) {
+		JXPathContext context = JXPathContext.newContext(folia);
+		context.setLenient(true);
+		//Console.log(context.getValue("//w[id='".concat(w.getId()).concat("']/following-sibling::w[1]/lemma/@clazz")));
+		return (W)context.getValue("//w[id='".concat(w.getId()).concat("']/following-sibling::w[1]"));
 	}
 	
 	public static W addSense(W w, String clazz, Feat... feats) {

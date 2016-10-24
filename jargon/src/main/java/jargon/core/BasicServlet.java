@@ -1,6 +1,8 @@
 package jargon.core;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -21,7 +23,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
@@ -182,157 +189,18 @@ public class BasicServlet extends HttpServlet {
 			throw new IOException("No desired output format specified through mimetype.");
 	}
 	
+	public void reply(String[] answer) {
+		this.reply(
+			StringUtils.join(answer) //.replaceAll("[<][?]xml version=\"1[.]0\" encoding=\"UTF[-]8\"[?][>]", "")
+		);
+	}
+	
 	public void reply(String answer) {
 		try {
 			this.servletResponse.getWriter().println(answer);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Sends response in plain text.
-	 * @param answer	String to be sent as answer.
-	 * @return			Whether or not reply was successfully sent.
-	 */
-	/*public boolean reply(String answer) {
-		try {
-			this.servletResponse.getWriter().println(answer);
-			return true;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-	}
-	
-	public boolean replyAsAsked(Object answer) {
-		try {
-			this.getClass().getMethod(
-				"replyIn".concat(this.outputFormat.toString()), Object.class
-			).invoke(
-				this, answer
-			);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return true;
-	}
-	
-	public boolean replyAsAsked(Object[] answer) {
-		try {
-			this.getClass().getMethod(
-				"replyIn".concat(this.outputFormat.toString()), Object[].class
-			).invoke(
-				this, new Object[] { answer }
-			);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return true;
-	}*/
-	
-	/**
-	 * Sends response in JSON.
-	 * @param answer	Object to be sent as answer.
-	 * @return			Whether or not reply was successfully sent.
-	 */
-	/*public boolean replyInJSON(Object answer) {
-		try {
-			return this.reply(
-				new ObjectMapper().writeValueAsString(answer)
-			);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-	}*/
-	
-	/**
-	 * Sends response in JSON.
-	 * @param answer	Array to be sent as answer.
-	 * @return			Whether or not reply was successfully sent.
-	 */
-	/*public boolean replyInJSON(Object[] answers) {
-		ArrayNode arrayNode = new ObjectMapper().createArrayNode();
-		
-		for (Object object : answers)
-			arrayNode.addPOJO(object);
-		
-		return this.replyInJSON(arrayNode);
-	}*/
-	
-	/**
-	 * Sends response in XML.
-	 * @param answer	Object to be sent as answer.
-	 * @return			Whether or not reply was successfully sent.
-	 */
-	/*public boolean replyInXML(Object answer) {
-		try {
-			return this.reply(
-				new XmlMapper()
-					.enable(Feature.WRITE_XML_DECLARATION)
-					.writeValueAsString(answer)
-				);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-	}*/
-	
-	/**
-	 * Sends response in XML.
-	 * @param answer	Array of objects to be sent as answer.
-	 * @return			Whether or not reply was successfully sent.
-	 */
-	/*public boolean replyInXML(Object[] answers) {
-		return this.replyInXML(
-			new Array(answers)
-		);
-	}
-	
-	private class Array {
-		@JacksonXmlElementWrapper(useWrapping = false)
-		public Object[] item;
-		public Array(Object[] items) {
-			this.item = items;
-		}
-	}*/
-	
-	public String toXML(Object object) {
-		try {
-			Marshaller marshaller = JAXBContext.newInstance(object.getClass()).createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			marshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/xml");
-			StringWriter stringWriter = new StringWriter();
-			marshaller.marshal(object, stringWriter);
-			return stringWriter.toString();
-		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	public String toJSON(Object object) {
-		try {
-			Marshaller marshaller = JAXBContext.newInstance(object.getClass()).createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			marshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
-			StringWriter stringWriter = new StringWriter();
-			marshaller.marshal(object, stringWriter);
-			return stringWriter.toString();
-		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
 		}
 	}
 	

@@ -51,16 +51,39 @@ $(document).ready(function() {
 		
 		$(".foliaViewer").remove();
 		
-		$("body").append(
-			$.ajax({
-				url: "process/natural/language",
-				method: "POST",
-				async: false,
-				processData: false,
-				contentType: false,
-				data: formData
-			}).responseText
-		);
+		$.each(
+			$.parseJSON(
+				$.ajax({
+					url: "process/natural/language",
+					method: "POST",
+					async: false,
+					processData: false,
+					contentType: false,
+					data: formData
+				}).responseText
+			),
+		function(i,o) {
+			$("body").append(
+				new FoliaViewer(o).view()
+			);
+		});
+		
+		/*$.each(
+			$($.parseXML(
+				$.ajax({
+					url: "process/natural/language",
+					method: "POST",
+					async: false,
+					processData: false,
+					contentType: false,
+					data: formData
+				}).responseText
+			)
+		).find("Array > item"), function(i,o) {
+			$("body").append(
+				new FoliaViewer(o).view()
+			);
+		});*/
 	}
 	
 	$("#submitButton").on("click", submitForm);

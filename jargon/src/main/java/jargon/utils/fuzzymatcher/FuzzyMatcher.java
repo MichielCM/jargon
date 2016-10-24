@@ -44,7 +44,7 @@ public class FuzzyMatcher {
 		for (Record comparator : this.comparators.read()) {
 			double similarity = this.matches(original, comparator.getValue(), algorithm);
 			if (similarity >= threshold) {
-				matches.add(new FuzzyMatch(original, comparator.getValue(), algorithm, similarity));
+				matches.add(new FuzzyMatch(original, comparator.getValue(), algorithm, similarity, comparator));
 			}
 		}
 		

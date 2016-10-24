@@ -1,44 +1,45 @@
-ws>waarschijnlijk&\b([Ww]s)([.]|\b)&waarschijnlijk
-vlgs>volgens&\b([Vv]lgs)([.]|\b)&volgens
-obv>op basis van&\b([Oo]bv|[Oo][.]b[.]v)([.]|\b)&op basis van
-ivm>in verband met&\b([Ii]vm|[Ii][.]v[.]m)([.]|\b)&in verband met
-tgv>ten gevolge van&\b([Tt]gv|[Tt][.]g[.]v)([.]|\b)&ten gevolge van
-mn>met name&\b([Mm][.]?n([.]|\b))&met name
-ed>en dergelijke&\b([Ee][.]?d([.]|\b))&en dergelijke
-v>van&\b([Vv]([.]|\b))&van
-vd>van de&\b([Vv][.]?d([.]|\b))&van de
-zn>zo nodig&\b([Zz][.]?n([.]|\b))&zo nodig
-excl>exclusief&\b([Ee]xcl)([.]|\b)&exclusief
-incl>inclusief&\b([Ii]ncl)([.]|\b)&inclusief
-evt>eventueel&\b([Ee]vt)([.]|\b)&eventueel
-li>linker&\b([Ll]i)(([-.])(\S*))?\b&linker$4
-re>rechter&\b([Rr]e)(([-.])(\S*))?\b&rechter$4
-x>keer&"\b([0-9,.]+)( +)?(x)\b"&$1 keer
-dgn>dagen&"\b([0-9,.]*)(d(?:g|gn)?)\b"&$1 dagen
-wkn>weken&"\b([0-9,.]*)(w(?:k|kn)?)\b"&$1 weken
-jrn>jaren&"\b([0-9,.]*)(j(?:r|rn)?)\b"&$1 jaren
-vold>voldoende&\b(([Oo]n)?[Vv]old)([.]|\b)&$1oende
-si>sinds&\b([Ss]i([.]|\b))&sinds
-kl>klacht&([Kk]l([.]|\b))&klacht
-oef>oefen&\b([Oo]ef([.]|\b))&oefen
-verw>verwijzing&\b([Vv]erw([.]|\b))&verwijzing
-nw>nieuw&\b([Nn]w([.]|\b))&nieuw
-->niet&([a-zA-Z])[-](\W|$)&$1 niet.
-+>wel&([a-zA-Z])[+](\W|$)&$1 wel.
-dgs>daags&\b([0-9,.]+)?([Dd]gs[.]?)([0-9,.]+|\b)&$1 daags $3
-dd>per dag&\b([0-9,.]+)?(d[.]?d)([0-9,.]+|\b)&$1 per dag $3
-bdd>tweemaal daags&\b([Bb][.]d[.]?d)([0-9,.]+|\b)&tweemaal daags $2
-tdd>driemaal daags&\b([Tt][.]d[.]?d)([0-9,.]+|\b)&driemaal daags $2
-qdd>viermaal daags&\b([Qq][.]d[.]?d)([0-9,.]+|\b)&viermaal daags $2
-alc>alcohol&\b([Aa]lc([.]|\b))&alcohol
-jan>januari&\b([Jj]an([.]|\b))&januari
-feb>februari&\b([Ff]eb[r]?([.]|\b))&februari
-mrt>maart&\b([Mm]rt([.]|\b))&maart
-apr>april&\b([Aa]pr([.]|\b))&april
-jun>juni&\b([Jj]un([.]|\b))&juni
-jul>juli&\b([Jj]ul([.]|\b))&juli
-aug>augustus&\b([Aa]ug([.]|\b))&augustus
-sep>september&\b([Ss]ep[t]?([.]|\b))&september
-okt>oktober&\b([Oo]kt([.]|\b))&oktober
-nov>november&\b([Nn]ov([.]|\b))&november
-dec>december&\b([Dd]ec([.]|\b))&december
+ws>waarschijnlijk	\b([Ww]s)([.]|\b)	waarschijnlijk
+vlgs>volgens	\b([Vv]lgs)([.]|\b)	volgens
+obv>op basis van	\b([Oo]bv|[Oo][.]b[.]v)([.]|\b)	op basis van
+ivm>in verband met	\b([Ii]vm|[Ii][.]v[.]m)([.]|\b)	in verband met
+tgv>ten gevolge van	\b([Tt]gv|[Tt][.]g[.]v)([.]|\b)	ten gevolge van
+tav>ten aanzien van	\b([Tt]av|[Tt][.]a[.]v)([.]|\b)	ten aanzien van
+mn>met name	\b([Mm][.]?n([.]|\b))	met name
+ed>en dergelijke	\b([Ee][.]?d([.]|\b))	en dergelijke
+v>van	\b([Vv]([.]|\b))	van
+vd>van de	\b([Vv][.]?d([.]|\b))	van de
+zn>zo nodig	\b([Zz][.]?n([.]|\b))	zo nodig
+excl>exclusief	\b([Ee]xcl)([.]|\b)	exclusief
+incl>inclusief	\b([Ii]ncl)([.]|\b)	inclusief
+evt>eventueel	\b([Ee]vt)([.]|\b)	eventueel
+li>linker	\b(L|[Ll]i)(([-.])(\S*))?\b	linker$4
+re>rechter	\b(R|[Rr]e)(([-.])(\S*))?\b	rechter$4
+x>keer	"\b([0-9,.]+)( +)?(x)\b"	$1 keer
+dgn>dagen	"\b([0-9,.]*)(d(?:g|gn)?)\b"	$1 dagen
+wkn>weken	"\b([0-9,.]*)(w(?:k|kn)?)\b"	$1 weken
+jrn>jaren	"\b([0-9,.]*)(j(?:r|rn)?)\b"	$1 jaren
+vold>voldoende	\b(([Oo]n)?[Vv]old)([.]|\b)	$1oende
+si>sinds	\b([Ss]i([.]|\b))	sinds
+kl>klacht	([Kk]l([.]|\b))	klacht
+oef>oefen	\b([Oo]ef([.]|\b))	oefen
+verw>verwijzing	\b([Vv]erw([.]|\b))	verwijzing
+nw>nieuw	\b([Nn]w([.]|\b))	nieuw
+->niet	([a-zA-Z])[-](\W|$)	$1 niet.
++>wel	([a-zA-Z])[+](\W|$)	$1 wel.
+dgs>daags	\b([0-9,.]+)?([Dd]gs[.]?)([0-9,.]+|\b)	$1 daags $3
+dd>per dag	\b([0-9,.]+)?(d[.]?d)([0-9,.]+|\b)	$1 per dag $3
+bdd>tweemaal daags	\b([Bb][.]d[.]?d)([0-9,.]+|\b)	tweemaal daags $2
+tdd>driemaal daags	\b([Tt][.]d[.]?d)([0-9,.]+|\b)	driemaal daags $2
+qdd>viermaal daags	\b([Qq][.]d[.]?d)([0-9,.]+|\b)	viermaal daags $2
+alc>alcohol	\b([Aa]lc([.]|\b))	alcohol
+jan>januari	\b([Jj]an([.]|\b))	januari
+feb>februari	\b([Ff]eb[r]?([.]|\b))	februari
+mrt>maart	\b([Mm]rt([.]|\b))	maart
+apr>april	\b([Aa]pr([.]|\b))	april
+jun>juni	\b([Jj]un([.]|\b))	juni
+jul>juli	\b([Jj]ul([.]|\b))	juli
+aug>augustus	\b([Aa]ug([.]|\b))	augustus
+sep>september	\b([Ss]ep[t]?([.]|\b))	september
+okt>oktober	\b([Oo]kt([.]|\b))	oktober
+nov>november	\b([Nn]ov([.]|\b))	november
+dec>december	\b([Dd]ec([.]|\b))	december

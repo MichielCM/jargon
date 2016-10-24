@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +60,28 @@ public class RuleEngine {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+				case XLS:
+					FileManager fileManager = SingletonFactory.getSingletonFactory().getFileManager();
+					String rules = null;
+					
+					if (fileManager.sizeDiffers(resource)) {
+						try {
+							rules = getRulesFromSpreadSheet(
+								Files.readAllBytes(resource.toPath())
+							);
+							
+							fileManager.manage(resource, rules);
+							
+							System.out.println(rules);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} else {
+						rules = (String) fileManager.getData(resource);
+					}
+					
+					this.addRules(rules);
 				default:
 					break;
 			}
@@ -104,6 +127,12 @@ public class RuleEngine {
 		}
 	}
 	
+	/**
+	 * Initiates rule engine from byte arrays containing decision rules. Excel files (.xls) in Drools' decision table format
+	 * are expected.
+	 * @param type			Type of resource. Currently only XLS is supported in this constructor.
+	 * @param resources		Primitive byte arrays containing decision rules.
+	 */
 	public RuleEngine(ResourceType type, byte[]... resources) {
 		this();
 		for (byte[] resource : resources) {
@@ -236,7 +265,7 @@ public class RuleEngine {
 	
 	private void addRules(String... rules) {
 		for (String rule : rules) {
-			System.out.println(rule);
+			//System.out.println(rule);
 			try {
 				File fTemp = File.createTempFile("drools",".drl");
 				fTemp.deleteOnExit();

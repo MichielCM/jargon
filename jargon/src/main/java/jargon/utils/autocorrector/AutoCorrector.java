@@ -49,7 +49,7 @@ public class AutoCorrector {
 						category.concat(".csv")
 					).getFile()
 				),
-				new String[] { "id", "find", "replace"}, "id", System.getProperty("line.separator"), "&"
+				new String[] { "id", "find", "replace"}, "id", System.getProperty("line.separator"), "\t"
 			);
 			
 			for (CSVRecord csvRecord : csvReader.read()) {

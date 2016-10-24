@@ -19,6 +19,7 @@ import jargon.core.Console;
 import jargon.model.Source;
 import jargon.model.folia.FoLiA;
 import jargon.model.folia.FoliaUtils;
+import jargon.model.folia.FoliaWrapper;
 import jargon.utils.TimeOut;
 import jargon.utils.autocorrector.AutoCorrector;
 import jargon.utils.fuzzymatcher.CSVResource;
@@ -55,7 +56,7 @@ public class Pipeline {
 	private String[] _segmentize(Segments segmentType) {
 		switch(segmentType) {
 			case SENTENCES:
-				return this.source.full[0].split("(?<=[.,—?!;])");
+				return this.source.full[0].split("(?<=[.,—?!;\\n])");
 			case TOKENS:
 				return this.source.full[0].split("\b");
 			default:
@@ -81,11 +82,12 @@ public class Pipeline {
 			for (String segment : (String[]) this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).get(this.source)) {
 				segment = segment.trim();
 				
-				if (segment.substring(0,1).equals(segment.substring(0,1).toUpperCase()))
-					segment = segment.substring(0,1).toLowerCase().concat(segment.substring(1));
-				
-				if (segment.substring(segment.length() - 1).matches("[.,—?!;]"))
-					segment = segment.substring(0, segment.length() - 1);
+				if (segment.length() > 0) {
+					if (segment.substring(0,1).equals(segment.substring(0,1).toUpperCase()))
+						segment = segment.substring(0,1).toLowerCase().concat(segment.substring(1));
+					if (segment.substring(segment.length() - 1).matches("[.,—?!;]"))
+						segment = segment.substring(0, segment.length() - 1);
+				}
 				
 				segments.add(segment);
 			}
@@ -270,63 +272,108 @@ public class Pipeline {
 	}
 	
 	public void _summarize() {
-		try {
-			for (FoLiA folia : this.source.folia) {
-				new RuleEngine(
-					ResourceType.XLS,
-					IOUtils.toByteArray(
-						this.getClass().getClassLoader().getResourceAsStream(
-							"keyword-extraction-n-ww.xls"
-						)
+		for (FoLiA folia : this.source.folia) {
+			new RuleEngine(
+				ResourceType.XLS,
+				new File(
+					this.getClass().getClassLoader().getResource(
+						"keyword-extraction-n-ww.xls"
+					).getFile()
+				)
+			).set(
+				"folia", folia
+			).add(
+				FoliaUtils.getWords(folia).toArray()
+			).execute();
+			
+			new RuleEngine(
+				ResourceType.XLS,
+				new File(
+					this.getClass().getClassLoader().getResource(
+						"keyword-extraction-adj.xls"
+					).getFile()
+				)
+			).set(
+				"folia", folia
+			).add(
+				FoliaUtils.getWords(folia).toArray()
+			).execute();
+			
+			new RuleEngine(
+				ResourceType.XLS,
+				new File(
+					this.getClass().getClassLoader().getResource(
+						"summarization/attributes.xls"
+					).getFile()
+				),
+				new File(
+					this.getClass().getClassLoader().getResource(
+						"summarization/polarity.xls"
+					).getFile()
+				),
+				new File(
+					this.getClass().getClassLoader().getResource(
+						"summarization/occurrence.xls"
+					).getFile()
+				),
+				new File(
+					this.getClass().getClassLoader().getResource(
+						"summarization/frequency.xls"
+					).getFile()
+				),
+				new File(
+					this.getClass().getClassLoader().getResource(
+						"summarization/time-of-day.xls"
+					).getFile()
+				)
+			).set(
+				"folia", folia
+			).set(
+				"foliaWrapper", new FoliaWrapper(folia)
+			/*).set(
+				"occurrenceMatcher", new FuzzyMatcher(
+					new CSVResource(
+						new File(
+							this.getClass().getClassLoader().getResource(
+								"occurrences.csv"
+							).getFile()
+						),
+						new String[] { "id" }, "id", "id", System.getProperty("line.separator"), "&"
 					)
-				).set(
-					"folia", folia
-				).add(
-					FoliaUtils.getWords(folia).toArray()
-				).execute();
-				
-				new RuleEngine(
-					ResourceType.XLS,
-					IOUtils.toByteArray(
-						this.getClass().getClassLoader().getResourceAsStream(
-							"keyword-extraction-adj.xls"
-						)
+				)
+			).set(
+				"timeMatcher", new FuzzyMatcher(
+					new CSVResource(
+						new File(
+							this.getClass().getClassLoader().getResource(
+								"time.csv"
+							).getFile()
+						),
+						new String[] { "id", "value" }, "id", "id", System.getProperty("line.separator"), "&"
 					)
-				).set(
-					"folia", folia
-				).add(
-					FoliaUtils.getWords(folia).toArray()
-				).execute();
-				
-				new RuleEngine(
-					ResourceType.XLS,
-					IOUtils.toByteArray(
-						this.getClass().getClassLoader().getResourceAsStream(
-							"summarization.xls"
-						)
-					)
-				).set(
-					"folia", folia
-				).set(
-					"occurrenceMatcher", new FuzzyMatcher(
-						new CSVResource(
-							new File(
-								this.getClass().getClassLoader().getResource(
-									"occurrences.csv"
-								).getFile()
-							),
-							new String[] { "id" }, "id", "id", System.getProperty("line.separator"), "&"
-						)
-					)
-				).add(
-					FoliaUtils.getWords(folia).toArray()
-				).add(
-					FoliaUtils.getDependencies(folia).toArray()
-				).execute();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				)*/
+			).add(
+				FoliaUtils.getWords(folia).toArray()
+			).add(
+				FoliaUtils.getDependencies(folia).toArray()
+			).execute();
+			
+			new RuleEngine(
+				ResourceType.XLS,
+				new File(
+					this.getClass().getClassLoader().getResource(
+						"summarization/family.xls"
+					).getFile()
+				)
+			).set(
+				"folia", folia
+			).set(
+				"foliaWrapper", new FoliaWrapper(folia)
+			).add(
+				FoliaUtils.getWords(folia).toArray()
+			).add(
+				FoliaUtils.getDependencies(folia).toArray()
+			).execute();
 		}
 	}
 	
