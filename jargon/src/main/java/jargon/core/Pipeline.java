@@ -9,10 +9,8 @@ import java.io.StringReader;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 
 import jargon.core.Console;
@@ -50,13 +48,15 @@ public class Pipeline {
 			e.printStackTrace();
 		}
 		
+		Console.log("SEGMENTATION DONE");
 		return this;
 	}
 	
 	private String[] _segmentize(Segments segmentType) {
 		switch(segmentType) {
 			case SENTENCES:
-				return this.source.full[0].split("(?<=[.,—?!;\\n])");
+				//return this.source.full[0].split("(?<=[.,—?!;\\n])+");
+				return this.source.full[0].split("[.,—?!;\\n]+");
 			case TOKENS:
 				return this.source.full[0].split("\b");
 			default:
@@ -72,6 +72,7 @@ public class Pipeline {
 			e.printStackTrace();
 		}
 		
+		Console.log("CLEANING DONE");
 		return this;
 	}
 	
@@ -83,13 +84,15 @@ public class Pipeline {
 				segment = segment.trim();
 				
 				if (segment.length() > 0) {
-					if (segment.substring(0,1).equals(segment.substring(0,1).toUpperCase()))
-						segment = segment.substring(0,1).toLowerCase().concat(segment.substring(1));
+					if (!segment.split("\\b")[0].toUpperCase().equals(segment.split("\\b")[0]))
+						if (segment.substring(0,1).equals(segment.substring(0,1).toUpperCase()))
+							segment = segment.substring(0,1).toLowerCase().concat(segment.substring(1));
+					
 					if (segment.substring(segment.length() - 1).matches("[.,—?!;]"))
 						segment = segment.substring(0, segment.length() - 1);
+					
+					segments.add(segment);
 				}
-				
-				segments.add(segment);
 			}
 			
 			return segments.toArray(new String[segments.size()]);
@@ -109,6 +112,7 @@ public class Pipeline {
 			e.printStackTrace();
 		}
 		
+		Console.log("UNABBREVIATION DONE");
 		return this;
 	}
 	
@@ -138,6 +142,7 @@ public class Pipeline {
 			e.printStackTrace();
 		}
 		
+		Console.log("SPELLCHECKING DONE");
 		return this;
 	}
 	
@@ -168,6 +173,7 @@ public class Pipeline {
 			e.printStackTrace();
 		}*/
 		
+		Console.log("FROGGING DONE");
 		return this;
 	}
 	
@@ -177,10 +183,10 @@ public class Pipeline {
 		
 		try {
 			String[] segments = (String[])this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).get(this.source);
-			Socket socket = SingletonFactory.getSingletonFactory().getLaMachine();
+			Socket socket = Singleton.getInstance().getLaMachine();
 			
 			for (String segment : segments) {
-				Console.log(segment);
+				Console.log("SEGMENT", segment);
 				
 				//send data
 				printWriter = new PrintWriter(socket.getOutputStream());
@@ -207,7 +213,7 @@ public class Pipeline {
 					//Console.log(response);
 					//this.source.folia = (FoLiA[]) ArrayUtils.addAll(this.source.folia, new FoLiA[] { (FoLiA) new XmlMapper().readValue(response, FoLiA.class) });
 					this.source.folia = (FoLiA[]) ArrayUtils.addAll(this.source.folia, new FoLiA[] {
-						(FoLiA) JAXBContext.newInstance(FoLiA.class).createUnmarshaller().unmarshal(new StringReader(response))
+						(FoLiA) Singleton.getInstance().getFoliaUnmarshaller().unmarshal(new StringReader(response))
 					});
 				} else throw new IOException("No answer received");
 			}
@@ -219,61 +225,51 @@ public class Pipeline {
 		return this.source.folia;
 	}
 	
-	public Pipeline annotate() {
-		this._annotate();
-		return this;
-	}
-	
-	public void _annotate() {
-		try {
-			for (FoLiA folia : this.source.folia) {
-				new RuleEngine(
-					ResourceType.XLS,
-					IOUtils.toByteArray(
-						this.getClass().getClassLoader().getResourceAsStream(
-							"annotation.xls"
-						)
-					)
-				).set(
-					"auxMatcher", new FuzzyMatcher(
-						new CSVResource(
-							new File(
-								this.getClass().getClassLoader().getResource(
-									"aux-verbs.csv"
-								).getFile()
-							),
-							new String[] { "id" }, "id", "id", System.getProperty("line.separator"), ","
-						)
-					)
-				).set(
-					"copMatcher", new FuzzyMatcher(
-						new CSVResource(
-							new File(
-								this.getClass().getClassLoader().getResource(
-									"cop-verbs.csv"
-								).getFile()
-							),
-							new String[] { "id", "use"}, "id", "id", System.getProperty("line.separator"), ","
-						)
-					)
-				).add(
-					FoliaUtils.getWords(folia).toArray()
-				).execute();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 	public Pipeline summarize() {
 		this._summarize();
+		
+		Console.log("SUMMARIZATION DONE");
 		return this;
 	}
 	
 	public void _summarize() {
 		for (FoLiA folia : this.source.folia) {
-			new RuleEngine(
+			Singleton.getInstance().getRuleEngine(
+				"annotation",
+				ResourceType.XLS,
+				new File(
+					this.getClass().getClassLoader().getResource(
+						"annotation.xls"
+					).getFile()
+				)
+			).set(
+				"auxMatcher", new FuzzyMatcher(
+					new CSVResource(
+						new File(
+							this.getClass().getClassLoader().getResource(
+								"aux-verbs.csv"
+							).getFile()
+						),
+						new String[] { "id" }, "id", "id", System.getProperty("line.separator"), ","
+					)
+				)
+			).set(
+				"copMatcher", new FuzzyMatcher(
+					new CSVResource(
+						new File(
+							this.getClass().getClassLoader().getResource(
+								"cop-verbs.csv"
+							).getFile()
+						),
+						new String[] { "id", "use"}, "id", "id", System.getProperty("line.separator"), ","
+					)
+				)
+			).add(
+				FoliaUtils.getWords(folia).toArray()
+			).execute();
+			
+			Singleton.getInstance().getRuleEngine(
+				"keyword-n",
 				ResourceType.XLS,
 				new File(
 					this.getClass().getClassLoader().getResource(
@@ -286,7 +282,8 @@ public class Pipeline {
 				FoliaUtils.getWords(folia).toArray()
 			).execute();
 			
-			new RuleEngine(
+			Singleton.getInstance().getRuleEngine(
+				"keyword-adj",
 				ResourceType.XLS,
 				new File(
 					this.getClass().getClassLoader().getResource(
@@ -299,7 +296,9 @@ public class Pipeline {
 				FoliaUtils.getWords(folia).toArray()
 			).execute();
 			
-			new RuleEngine(
+			//new RuleEngine(
+			Singleton.getInstance().getRuleEngine(
+				"summarization",
 				ResourceType.XLS,
 				new File(
 					this.getClass().getClassLoader().getResource(
@@ -330,45 +329,47 @@ public class Pipeline {
 				"folia", folia
 			).set(
 				"foliaWrapper", new FoliaWrapper(folia)
-			/*).set(
-				"occurrenceMatcher", new FuzzyMatcher(
-					new CSVResource(
-						new File(
-							this.getClass().getClassLoader().getResource(
-								"occurrences.csv"
-							).getFile()
-						),
-						new String[] { "id" }, "id", "id", System.getProperty("line.separator"), "&"
-					)
-				)
-			).set(
-				"timeMatcher", new FuzzyMatcher(
-					new CSVResource(
-						new File(
-							this.getClass().getClassLoader().getResource(
-								"time.csv"
-							).getFile()
-						),
-						new String[] { "id", "value" }, "id", "id", System.getProperty("line.separator"), "&"
-					)
-				)*/
 			).add(
 				FoliaUtils.getWords(folia).toArray()
 			).add(
 				FoliaUtils.getDependencies(folia).toArray()
 			).execute();
-			
-			new RuleEngine(
+		}
+	}
+	
+	public Pipeline annotate(String annotation) {
+		this._annotate(annotation);
+		
+		Console.log("ANNOTATION DONE");
+		return this;
+	}
+	
+	private void _annotate(String annotation) {
+		for (FoLiA folia : this.source.folia) {
+			Singleton.getInstance().getRuleEngine(
+				annotation,
 				ResourceType.XLS,
 				new File(
 					this.getClass().getClassLoader().getResource(
-						"summarization/family.xls"
+						"annotation/".concat(annotation).concat(".xls")
 					).getFile()
 				)
 			).set(
 				"folia", folia
 			).set(
 				"foliaWrapper", new FoliaWrapper(folia)
+			).set(
+				"meddraMatcher", Singleton.getInstance().getFuzzyMatcher(
+					"meddraMatcher",
+					new CSVResource(
+						new File(
+							this.getClass().getClassLoader().getResource(
+								"meddra/llt.csv"
+							).getFile()
+						),
+						new String[] { "id", "value" }, "id", "value", System.getProperty("line.separator"), "\t"
+					)
+				)
 			).add(
 				FoliaUtils.getWords(folia).toArray()
 			).add(

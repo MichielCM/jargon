@@ -6,12 +6,16 @@ import static java.util.Comparator.comparing;
 
 import org.apache.commons.lang3.StringUtils;
 
+import jargon.core.Console;
+import jargon.utils.CosineSimilarity;
+
 public class FuzzyMatcher {
 
 	public enum ALGORITHM {
 		BINARY,
 		LEVENSHTEIN, 
 		JAROWINKLER,
+		COSINE,
 		REGEX
 	}
 	
@@ -33,6 +37,26 @@ public class FuzzyMatcher {
 		}
 	}
 	
+	public boolean hasMatch(String original, double threshold, ALGORITHM... algorithms) {
+		Console.log(original);
+		
+		for (int i=0; i<algorithms.length; i++) {
+			if (this.hasMatch(original, algorithms[i], threshold))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean hasMatch(String original, ALGORITHM[] algorithms, Double[] thresholds) {
+		for (int i=0; i<algorithms.length; i++) {
+			if (this.hasMatch(original, algorithms[i], thresholds[i]))
+				return true;
+		}
+		
+		return false;
+	}
+	
 	public boolean hasMatch(String original, ALGORITHM algorithm, double threshold) {
 		FuzzyMatch[] matches = this.match(original, algorithm, threshold);
 		return (matches.length > 0);
@@ -45,6 +69,7 @@ public class FuzzyMatcher {
 			double similarity = this.matches(original, comparator.getValue(), algorithm);
 			if (similarity >= threshold) {
 				matches.add(new FuzzyMatch(original, comparator.getValue(), algorithm, similarity, comparator));
+				Console.log(matches.get(matches.size() - 1).getComparator(), matches.get(matches.size() - 1).getSimilarity(), matches.get(matches.size() - 1).getOriginal());
 			}
 		}
 		
@@ -59,6 +84,8 @@ public class FuzzyMatcher {
 				return StringUtils.getLevenshteinDistance(original, comparator);
 			case JAROWINKLER:
 				return StringUtils.getJaroWinklerDistance(original, comparator);
+			case COSINE:
+				return CosineSimilarity.calculate(original, comparator);
 			case REGEX:
 				return (original.matches(comparator) ? 1.0 : 0.0);
 			default:
@@ -72,6 +99,8 @@ public class FuzzyMatcher {
 				return (StringUtils.getLevenshteinDistance(original, comparator) >= threshold);
 			case JAROWINKLER:
 				return (StringUtils.getJaroWinklerDistance(original, comparator) >= threshold);
+			case COSINE:
+				return (CosineSimilarity.calculate(original, comparator) >= threshold);
 			case REGEX:
 				return original.matches(comparator);
 			default:

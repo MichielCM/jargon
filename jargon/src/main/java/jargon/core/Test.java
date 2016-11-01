@@ -6,39 +6,41 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
+import jargon.utils.CosineSimilarity;
+import jargon.utils.servlet.Servlet;
+
 /**
  * Servlet implementation class Test
  */
-public class Test extends BasicServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public Test() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+@SuppressWarnings("serial")
+public class Test extends Servlet {
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		super.doGet(request, response);
+		this.doPost(request, response);
 	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		super.doPost(request, response);
 		
-		for (int i=0; i<100; i++) {
-			//super.reply(String.valueOf(Math.random()));
-			super.reply(String.valueOf(new java.util.Random().nextDouble()));
-		}
+		Console.log("called");
+		
+		Console.log(super.parameterize().get("param").getContent());
+		
+		Console.log(CosineSimilarity.calculate("type 1 diabetes mellitus", "diabetes mellitus type 1"));
+		Console.log(CosineSimilarity.calculate("type 2 diabletes mellitus", "diabetes mellitus type 1"));
+		Console.log(CosineSimilarity.calculate("diabetes mellitus", "diabetes mellitus"));
+		Console.log(CosineSimilarity.calculate("type 1 diabetes mellitus", "diabetes mellitus type 2"));
+		Console.log(CosineSimilarity.calculate("type 1 diabetes mellitus", "type 2 diabetes mellitus"));
+		Console.log(CosineSimilarity.calculate("varice", "varices"));
+		
+		Console.log(StringUtils.getJaroWinklerDistance("varice", "varices"));
+		
+		//super.reply("bla");
+		//super.reply("bla", "XML");
+		
+		
 	}
-
+	
 }

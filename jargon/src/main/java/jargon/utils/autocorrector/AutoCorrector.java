@@ -79,6 +79,7 @@ public class AutoCorrector {
 				
 				if (!this.hasUnusualCasing(text)) {
 					if (match.getSuggestedReplacements().size() > 0) {
+						Console.log(match.getSuggestedReplacements().get(0));
 						text = text.substring(0, match.getFromPos() + sizeCorrection).concat(
 							match.getSuggestedReplacements().get(0)
 						).concat(
@@ -96,6 +97,10 @@ public class AutoCorrector {
 		return text;
 	}
 	
+	/** Returns whether or not a string has a mix of lower- and uppercased characters. test returns false, Test returns false, TEST returns true, TeSt returns true.
+	 * @param term		String to check.
+	 * @return			Whether or not term is unusually cased.
+	 */
 	private boolean hasUnusualCasing(String term) {
 		int uppercase = 0;
 		

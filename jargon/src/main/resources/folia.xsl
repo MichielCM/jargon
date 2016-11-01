@@ -16,6 +16,7 @@
 						<span>Part of Speech</span>
 						<span>Attributes</span>
 						<span>Sense</span>
+						<span>Domain</span>
 						<xsl:for-each select="w">
 							<xsl:variable name="wID">
 								<xsl:value-of select="@xml:id"/>
@@ -76,6 +77,15 @@
 									<xsl:for-each select="sense/feat">
 										<xsl:value-of select="@subset"/>: <xsl:value-of select="@class"/>
 										<xsl:if test="not(position() = last())">, </xsl:if>
+									</xsl:for-each>
+								</span>
+								<span class="custom">
+									<xsl:for-each select="domain">
+										[<xsl:value-of select="translate(@class,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>]
+										<xsl:for-each select="feat">
+											<xsl:value-of select="@subset"/>: <xsl:value-of select="//w[@xml:id=current()/@class]/t"/>
+											<xsl:if test="not(position() = last())">, </xsl:if>
+										</xsl:for-each>
 									</xsl:for-each>
 								</span>
 							</div>

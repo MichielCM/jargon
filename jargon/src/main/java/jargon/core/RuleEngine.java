@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +21,7 @@ import org.kie.api.builder.Message;
 import org.kie.api.builder.Results;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.FactHandle;
 
 public class RuleEngine {
 	
@@ -61,7 +61,7 @@ public class RuleEngine {
 						e.printStackTrace();
 					}
 				case XLS:
-					FileManager fileManager = SingletonFactory.getSingletonFactory().getFileManager();
+					FileManager fileManager = Singleton.getInstance().getFileManager();
 					String rules = null;
 					
 					if (fileManager.sizeDiffers(resource)) {
@@ -72,7 +72,7 @@ public class RuleEngine {
 							
 							fileManager.manage(resource, rules);
 							
-							System.out.println(rules);
+							//System.out.println(rules);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -160,7 +160,7 @@ public class RuleEngine {
 	 * Adds object to knowledge session. Will be used to trigger rules.
 	 * @param object	Object to add.
 	 */
-	public RuleEngine insert(Object object) {
+	public RuleEngine add(Object object) {
 		this.knowledgeSession.insert(object);
 		return this;
 	}
@@ -171,7 +171,7 @@ public class RuleEngine {
 	 */
 	public RuleEngine add(Object[] objects) {
 		for (Object object : objects)
-			this.insert(object);
+			this.add(object);
 		
 		return this;
 	}
@@ -208,6 +208,7 @@ public class RuleEngine {
 	 */
 	public void exit() {
 		this.knowledgeSession.dispose();
+		this.knowledgeSession.destroy();
 	}
 	
 	private String getRulesFromSpreadSheet(File spreadSheet, InputType inputType) {
@@ -260,7 +261,7 @@ public class RuleEngine {
 	
 	private void init() {
 		this.knowledgeService = KieServices.Factory.get();
-		this.knowledgeFileSystem = this.knowledgeService.newKieFileSystem();		
+		this.knowledgeFileSystem = this.knowledgeService.newKieFileSystem();
 	}
 	
 	private void addRules(String... rules) {
@@ -301,5 +302,14 @@ public class RuleEngine {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public RuleEngine reset() {
+		Iterator<FactHandle> factHandles = this.knowledgeSession.getFactHandles().iterator();
+		
+		while (factHandles.hasNext())
+			this.knowledgeSession.delete(factHandles.next());
+		
+		return this;
 	}
 }

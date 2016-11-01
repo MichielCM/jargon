@@ -1,6 +1,7 @@
 package jargon.utils.upload;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -48,55 +49,74 @@ public class Uploader {
 		else return null;
 	}
 	
-	public Uploader upload(HttpServletRequest request) {
+	public Uploader upload(HttpServletRequest request, boolean multipart) {
 		try {
 			ArrayList<Upload> uploads = new ArrayList<Upload>();
 			this.index = new HashMap<String, Upload[]>();
 			
-			Iterator<FileItem> fileItems = new ServletFileUpload(
-				new DiskFileItemFactory()
-			).parseRequest(request).iterator();
-		
-			while (fileItems.hasNext()) {
-			    FileItem fileItem = fileItems.next();
-			    if (fileItem.isFormField()) {
-			    	uploads.add(
-			    		new Text(
-			    			fileItem.getFieldName(),
-			    			fileItem.getString()
-			    		)
-			    	);
-			    } else {
-			    	if (this.isBinary(fileItem.getContentType())) {
+			if (multipart) {
+				Iterator<FileItem> fileItems = new ServletFileUpload(
+					new DiskFileItemFactory()
+				).parseRequest(request).iterator();
+			
+				while (fileItems.hasNext()) {
+				    FileItem fileItem = fileItems.next();
+				    if (fileItem.isFormField()) {
 				    	uploads.add(
-				    		new BinaryFile(
+				    		new Text(
 				    			fileItem.getFieldName(),
-				    			fileItem.getContentType(),
-				    			fileItem.get()
-				    		)
-				    	);
-				    } else {
-				    	uploads.add(
-				    		new TextFile(
-			    				fileItem.getFieldName(),
-				    			fileItem.getContentType(),
 				    			fileItem.getString()
 				    		)
 				    	);
-				    }
+				    } else {
+				    	if (this.isBinary(fileItem.getContentType())) {
+					    	uploads.add(
+					    		new BinaryFile(
+					    			fileItem.getFieldName(),
+					    			fileItem.getContentType(),
+					    			fileItem.get()
+					    		)
+					    	);
+					    } else {
+					    	uploads.add(
+					    		new TextFile(
+				    				fileItem.getFieldName(),
+					    			fileItem.getContentType(),
+					    			fileItem.getString()
+					    		)
+					    	);
+					    }
+					}
+				    
+				    if (this.index.containsKey(fileItem.getFieldName())) {
+			    		this.index.put(
+			    			fileItem.getFieldName(),
+			    			(Upload[]) ArrayUtils.addAll(this.index.get(fileItem.getFieldName()), new Upload[] { uploads.get(uploads.size() - 1) })
+			    		);
+			    	} else {
+			    		this.index.put(
+			    			fileItem.getFieldName(),
+			    			new Upload[] { uploads.get(uploads.size() - 1) }
+			    		);
+			    	}
 				}
-			    
-			    if (this.index.containsKey(fileItem.getFieldName())) {
-		    		this.index.put(
-		    			fileItem.getFieldName(),
-		    			(Upload[]) ArrayUtils.addAll(this.index.get(fileItem.getFieldName()), new Upload[] { uploads.get(uploads.size() - 1) })
-		    		);
-		    	} else {
-		    		this.index.put(
-		    			fileItem.getFieldName(),
+			} else {
+				Enumeration<String> parameterNames = request.getParameterNames();
+				while (parameterNames.hasMoreElements()) {
+					String parameterName = parameterNames.nextElement();
+					
+					uploads.add(
+			    		new Text(
+		    				parameterName,
+			    			request.getParameter(parameterName)
+			    		)
+			    	);
+					
+					this.index.put(
+						parameterName,
 		    			new Upload[] { uploads.get(uploads.size() - 1) }
 		    		);
-		    	}
+				}
 			}
 			
 			this.uploads = uploads.toArray(new Upload[uploads.size()]);

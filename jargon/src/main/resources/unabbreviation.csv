@@ -43,3 +43,5 @@ sep>september	\b([Ss]ep[t]?([.]|\b))	september
 okt>oktober	\b([Oo]kt([.]|\b))	oktober
 nov>november	\b([Nn]ov([.]|\b))	november
 dec>december	\b([Dd]ec([.]|\b))	december
+copd>chronisch aspecifieke respiratoire aandoening	\bCOPD\b	chronisch aspecifieke respiratoire aandoening
+dm>diabetes mellitus	\bDM\b	diabetes mellitus

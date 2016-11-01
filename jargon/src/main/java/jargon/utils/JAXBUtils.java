@@ -5,7 +5,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.TransformerException;
@@ -15,8 +14,10 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
-public final class JAXBUtils {
+import jargon.core.Singleton;
 
+public final class JAXBUtils {
+	
 	public static java.util.List<?> getElementsByType(java.util.List<?> input, Class<?> type) {
 		return input
 			.stream()
@@ -29,7 +30,8 @@ public final class JAXBUtils {
 	
 	public static String toXML(Object object) {
 		try {
-			Marshaller marshaller = JAXBContext.newInstance(object.getClass()).createMarshaller();
+			//Marshaller marshaller = JAXBContext.newInstance(object.getClass()).createMarshaller();
+			Marshaller marshaller = Singleton.getInstance().getFoliaMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			marshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/xml");
 			StringWriter stringWriter = new StringWriter();
@@ -80,7 +82,8 @@ public final class JAXBUtils {
 	
 	public static String toJSON(Object object) {
 		try {
-			Marshaller marshaller = JAXBContext.newInstance(object.getClass()).createMarshaller();
+			//Marshaller marshaller = JAXBContext.newInstance(object.getClass()).createMarshaller();
+			Marshaller marshaller = Singleton.getInstance().getFoliaMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			marshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
 			StringWriter stringWriter = new StringWriter();

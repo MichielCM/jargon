@@ -33,7 +33,7 @@ $(document).ready(function() {
 	var submitForm = function() {
 		var formData = new FormData();
 		
-		$.each($("form input, form textarea"), function(i,o) {
+		$.each($("form input, form textarea, form select"), function(i,o) {
 			switch($(o).attr("type")) {
 			case "text":
 				formData.append($(o).attr("name"), $(o).val());
@@ -55,6 +55,10 @@ $(document).ready(function() {
 			$.ajax({
 				url: "process/natural/language",
 				method: "POST",
+				dataType: "html",
+				accepts: {
+					"html": "text/html; charset=UTF-8"
+				},
 				async: false,
 				processData: false,
 				contentType: false,
@@ -76,7 +80,21 @@ $(document).ready(function() {
 	<form action="">
 		<label>
 			<!--Query Text:	<input type="text" name="text" value="de meneer heeft last van zware hoofdpijn. en hij vindt dat naar." />-->
-			<textarea name="text">lijdt geen zware hoofdpijn</textarea>
+			<textarea name="text">
+				in de familie varices
+				zit in familie
+				zit niet in familie
+				in familie geen varices
+				geen atopie in familie
+				atopie in familie
+				atopische familie
+				moeilijke familie
+				in familie komt staar voor
+				in familie komt geen staar voor
+				hele familie heeft buisjes gehad
+				familie gering atopie
+				atopie licht in familie
+			</textarea>
 		</label>
 		<label>
 			<input type="checkbox" name="unabbreviate" checked="checked" /> Unabbreviate
@@ -88,10 +106,14 @@ $(document).ready(function() {
 			<input type="checkbox" name="frog" checked="checked" disabled="disabled" /> Frog
 		</label>
 		<label>
-			<input type="checkbox" name="annotate" checked="checked" /> Annotate
+			<input type="checkbox" name="summarize" checked="checked" /> Summarize
 		</label>
 		<label>
-			<input type="checkbox" name="summarize" checked="checked" /> Summarize
+			Annotate:
+			<select name="annotate">
+				<option value="">Nothing</option>
+				<option value="family">Family Relations</option>
+			</select>
 		</label>
 		
 		<input type="button" value="Process Natural Language" id="submitButton" />

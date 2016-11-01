@@ -56,7 +56,7 @@ public class BasicServlet extends HttpServlet {
 	
 	public void init(ServletConfig servletConfig) throws ServletException{
 		
-		System.setProperty("javax.xml.bind.context.factory","org.eclipse.persistence.jaxb.JAXBContextFactory");
+		//System.setProperty("javax.xml.bind.context.factory","org.eclipse.persistence.jaxb.JAXBContextFactory");
 		
 	}
 	
@@ -73,6 +73,8 @@ public class BasicServlet extends HttpServlet {
 		this.servletResponse.setContentType("text/plain; charset=UTF-8");
 		
 		try {
+			Console.log(servletRequest.getHeader("Accept"), servletRequest.getHeader("Accept-Charset"));
+			
 			this.mimeType = servletRequest.getHeader("Accept").split(",")[0].trim().replaceFirst("^text/", "application/");
 			
 			switch (this.mimeType) {

@@ -14,10 +14,7 @@ import jargon.core.BasicServlet;
 import jargon.core.Pipeline.Segments;
 import jargon.model.Source;
 import jargon.utils.JAXBUtils;
-import jargon.utils.upload.File;
 import jargon.utils.upload.File.FileType;
-import jargon.utils.upload.Upload;
-import jargon.utils.upload.Upload.UploadType;
 import jargon.utils.upload.Uploader;
 
 /**
@@ -49,9 +46,9 @@ public class Processor extends BasicServlet {
 		
 		Uploader uploader = new Uploader()
 			.registerMimeTypes(FileType.TEXT, "application/json", "application/csv", "application/xml")
-			.upload(request);
+			.upload(request, true);
 		
-		for (Upload up : uploader.getAll()) {
+		/*for (Upload up : uploader.getAll()) {
 			System.out.println(up.getType().toString());
 			System.out.println(up.getName());
 			
@@ -62,7 +59,7 @@ public class Processor extends BasicServlet {
 			
 			System.out.println(up.getContent());
 			System.out.println("---");
-		}
+		}*/
 		
 		Pipeline pipeline = new Pipeline(
 			new Source((uploader.get("text")).getContent().toString().trim())
@@ -77,16 +74,18 @@ public class Processor extends BasicServlet {
 		pipeline.segmentize(Segments.SENTENCES);
 		pipeline.clean(Segments.SENTENCES);
 		
-		Console.log(pipeline.getSource().sentences.length);
-		
 		if (uploader.get("frog") != null)
 			pipeline.frog(Segments.SENTENCES);
 		
-		if (uploader.get("annotate") != null)
-			pipeline.annotate();
-		
 		if (uploader.get("summarize") != null)
 			pipeline.summarize();
+		
+		if (uploader.get("annotate") != null)
+			if (uploader.get("annotate").getContent() != null)
+				if (!((String)uploader.get("annotate").getContent()).isEmpty())
+					pipeline.annotate((String)uploader.get("annotate").getContent());
+		
+		//Console.log(JAXBUtils.toXML(pipeline.getSource().folia[0]));
 		
 		super.reply(
 			Arrays.asList(
@@ -116,8 +115,6 @@ public class Processor extends BasicServlet {
 				new String[pipeline.getSource().folia.length]
 			), "application/json"
 		);*/
-		
-		Console.log("DONE");
 	}
 
 }
