@@ -4,13 +4,15 @@ import java.util.ArrayList;
 
 public class ArrayResource extends Resource {
 
-	//private ArrayList<Record> recordsList;
+	public ArrayResource(String[] values) {
+		this(null, values);
+	}
 	
-	public ArrayResource(String[] strings) {
+	public ArrayResource(String[] ids, String[] values) {
 		super.recordsList = new ArrayList<Record>();
 		
-		for (int i=0; i<strings.length; i++) {
-			super.recordsList.add(new Record("", strings[i]));
+		for (int i=0; i<values.length; i++) {
+			super.recordsList.add(new Record((ids == null ? "" : ids[i]), values[i]));
 		}
 	}
 

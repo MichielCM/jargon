@@ -20,16 +20,20 @@ public final class CosineSimilarity {
        }
        return termFrequencyMap;
    }
+   
+   public static double calculate(String text1, String text2) {
+	   return calculate(text1, text2, "(?!^)");
+   }
 
    /**
     * @param text1 
     * @param text2 
     * @return cosine similarity of text1 and text2
     */
-   public static double calculate(String text1, String text2) {
+   public static double calculate(String text1, String text2, String regex) {
        //Get vectors
-       Map<String, Integer> a = getTermFrequencyMap(text1.split("(?!^)")); //\\W+
-       Map<String, Integer> b = getTermFrequencyMap(text2.split("(?!^)")); //\\W+
+       Map<String, Integer> a = getTermFrequencyMap(text1.split(regex)); //\\W+
+       Map<String, Integer> b = getTermFrequencyMap(text2.split(regex)); //\\W+
 
        //Get unique words from both sequences
        HashSet<String> intersection = new HashSet<>(a.keySet());

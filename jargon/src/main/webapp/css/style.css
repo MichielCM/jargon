@@ -1,0 +1,368 @@
+body {
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 10pt;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+.contents {
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
+	max-width: 850px;
+	height: 100%;
+}
+
+body > footer {
+	position: fixed;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	background-color: #000000;
+	border-top: 3px solid #000000;
+	color: #77bae3;
+	height: 25px;
+	line-height: 25px;
+	text-align: center;
+}
+
+body > main {
+	margin-top: 27px;
+	margin-bottom: 27px;
+}
+
+body > header {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	z-index: 1;
+	background: transparent;
+}
+
+body > header > nav#logo-area {
+	height: 25px;
+	margin: 0px;
+	padding-left: 25px;
+	padding-right: 25px;
+	color: #77bae3;
+	background-color: #000000;
+	border-bottom: 2px solid #000000;
+	font-size: 1.5em;
+	font-weight: normal;
+}
+
+body > header > nav#logo-area > .contents > span {
+	display: inline-block;
+	vertical-align: top;
+}
+body > header > nav#logo-area > .contents > span:first-child {
+	width: 10%;
+}
+body > header > nav#logo-area > .contents > span#toggle {
+	width: 70%;
+	text-align: center;
+}
+body > header > nav#logo-area > .contents > span:not(:last-child):hover {
+	cursor: pointer;
+	color: #ffffff;
+}
+body > header > nav#logo-area > .contents > span:last-child {
+	display: inline;
+	width: 20%;
+	color: #77bae3;
+	font-size: 1.5em;
+	font-weight: bold;
+	text-shadow: #000000 1px 1px 0;
+}
+
+body > header > nav#search-area {
+	display: none;
+	position: relative;
+	margin: 0px;
+	margin-left: 25px;
+	margin-right: 25px;
+	margin-top: 25px;
+	margin-bottom: 15px;
+	padding: 0px;
+	font-weight: normal;
+}
+body > header > nav#search-area > .contents > textarea.input {
+	width: 70%;
+	height: 25px;
+	min-height: 25px;
+	max-height: 150px;
+	margin: 0px;
+	padding: 0px;
+	padding-top: 5px;
+	resize: vertical;
+	border: none;
+	border-radius: 10px 0px 0px 10px;
+	text-align: center;
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 10pt;
+}
+body > header > nav#search-area > .contents > label > input[type='file'] {
+	display: none;
+}
+body > header > nav#search-area > .contents > button, body > header > nav#search-area > .contents > label {
+	position: absolute;
+	display: inline-block;
+	top: 0px;
+	bottom: 0px;
+	right: 15%;
+	margin: 0px;
+	width: 15%;
+	border: 0px;
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 10pt;
+	background-color: #77bae3;
+	color: #000000;
+	text-shadow: #ffffff 1px 1px 5px;
+	cursor: pointer;
+	/* Internet Explorer 10 */
+	display:-ms-flexbox;
+	-ms-flex-pack:center;
+	-ms-flex-align:center;
+	/* Firefox */
+	display:-moz-box;
+	-moz-box-pack:center;
+	-moz-box-align:center;
+	/* Safari, Opera, and Chrome */
+	display:-webkit-box;
+	-webkit-box-pack:center;
+	-webkit-box-align:center;
+	/* W3C */
+	display:box;
+	box-pack:center;
+	box-align:center;
+}
+body > header > nav#search-area > .contents > button:hover, body > header > nav#search-area > .contents > label:hover {
+	background-color: #000000;
+	color: #ffffff;
+}
+body > header > nav#search-area > .contents > button.ok {
+	right: 0%;
+	border-radius: 0px 10px 10px 0px;
+}
+
+body > header > nav#options-area {
+	display: none;
+	overflow: hidden;
+	margin-bottom: 25px;
+}
+body > header > nav#options-area > .contents > fieldset {
+	margin: 0px;
+	margin-top: 25px;
+	width: 150px;
+	display: inline;
+	background-color: #77bae3;
+	border: none;
+	border-radius: 10px;
+	vertical-align: top;
+}
+body > header > nav#options-area > .contents > nav.option {
+	display: inline-block;
+	position: relative;
+	width: 49.5%;
+	margin-top: 10px;
+	vertical-align: top;
+}
+body > header > nav#options-area > .contents > nav.option.required {
+	display: none;
+}
+body > header > nav#options-area > .contents > nav.option:nth-child(even) {
+	margin-left: 0.5%;
+}
+body > header > nav#options-area > .contents > nav.option > input {
+	display: none;
+}
+body > header > nav#options-area > .contents > nav.option > label {
+	display: block;
+	width: 100%;
+	height: 25px;
+	text-shadow: #ffffff 1px 1px 5px;
+	cursor: pointer;
+	background-color: #77bae3;
+	border-radius: 10px;
+	/* Internet Explorer 10 */
+	display:-ms-flexbox;
+	-ms-flex-pack:center;
+	-ms-flex-align:center;
+	/* Firefox */
+	display:-moz-box;
+	-moz-box-pack:center;
+	-moz-box-align:center;
+	/* Safari, Opera, and Chrome */
+	display:-webkit-box;
+	-webkit-box-pack:center;
+	-webkit-box-align:center;
+	/* W3C */
+	display:box;
+	box-pack:center;
+	box-align:center;
+}
+body > header > nav#options-area > .contents > nav.option > label:hover {
+	background-color: #000000;
+	color: #ffffff;
+}
+body > header > nav#options-area > .contents > nav.option > input:checked + label {
+	background-color: #000000;
+	color: #ffffff;
+	border-radius: 10px 10px 0px 0px;
+}
+body > header > nav#options-area > .contents > nav.option > input:not(:checked) ~ fieldset {
+	/*display: none;*/
+	opacity: 0;
+	height: 0;
+}
+body > header > nav#options-area > .contents > nav.option > fieldset {
+	display: block;
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	background-color: #ffffff;
+	border: 0px;
+	border-radius: 0px 0px 10px 10px;
+	transition: opacity 150ms linear;
+	opacity: 1;
+}
+body > header > nav#options-area > .contents > nav.option > fieldset > input {
+	display: none;
+}
+body > header > nav#options-area > .contents > nav.option > fieldset > input + label {
+	display: inline-block;
+	float: left;
+	margin: 1px;
+	padding: 5px;
+	background-color: #77bae3;
+	text-shadow: #ffffff 1px 1px 5px;
+	border-radius: 10px;
+	cursor: pointer;
+}
+body > header > nav#options-area > .contents > nav.option > fieldset > input:checked + label {
+	color: #ffffff;
+	background-color: #000000;
+}
+
+/*body > header > nav#options-area > .contents > fieldset > legend {
+	font-weight: bold;
+}
+body > header > nav#options-area > .contents > fieldset > legend > label > input[type=checkbox]:checked + span {
+	color: red;
+}
+body > header > nav#options-area > .contents > fieldset label {
+	display: block;
+}
+body > header > nav#options-area > .contents > fieldset input {
+	vertical-align: middle;
+}
+body > header > nav#options-area > .contents > fieldset input[type='file'] {
+	display: inline;
+	visibility: hidden;
+	width: 15px;
+}
+body > header > nav#options-area > .contents > fieldset input[type='checkbox'] {
+	margin-left: 0px;
+	margin-right: 0px;
+	width: 15px;
+}*/
+
+body > main > .contents > progress {
+	display: block;
+	margin-top: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	height: 25px;
+	width: 20%;
+	background-color: #77bae3;
+	color: #000000;
+	border: 2px solid #000000;
+	border-radius: 10px;
+}
+progress::-webkit-progress-bar {
+	background-color: #77bae3;
+	border-radius: 10px;
+}
+progress::-webkit-progress-value {
+	background-color: #000000;
+	border-radius: 8px;
+}
+
+body > main > .contents > article {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border-bottom: 2px solid #b7e1fc;
+}
+body > main > .contents > article > label > input {
+	vertical-align: middle;
+}
+body > main > .contents > article > label > section {
+	display: inline-block;
+    border-radius: 10px;
+    margin: 3px;
+    border: 2px solid #fccfb7;
+    background-color: #fef1ea;
+    /*background-color: rgba(252, 207, 183, 0.3);*/
+}
+body > main > .contents > article > label > section > span {
+	display: inline-block;
+	margin: 4px;
+	vertical-align: top;
+}
+body > main > .contents > article > label > section > span.keyword {
+	font-weight: bold;
+}
+body > main > .contents > article > label > section > span.negative {
+	border-bottom: 2px dotted #e38277;
+}
+body > main > .contents > article > label > section > span > span {
+	vertical-align: top;
+}
+body > main > .contents > article > label > section > span > cite {
+	display: block;
+	margin-top: 5px;
+	font-weight: normal;
+}
+body > main > .contents > article > label > section > span > cite > abbr {
+	font-style: normal;
+	font-variant: small-caps;
+}
+body > main > .contents > article > label > section > span > cite > dfn {
+	padding-left: 4px;
+	font-style: normal;
+}
+
+body > aside {
+	position: fixed;
+	right: 0;
+	top: 27px;
+	bottom: 27px;
+	width: 20%;
+	padding: 4px;
+	padding-top: 10px;
+	background-color: #fef1ea;
+	/*background-color: rgba(252, 207, 183, 0.3);*/
+	border-left: 2px solid #fccfb7;
+}
+body > aside > fieldset {
+	border: 2px solid #fccfb7;
+	border-radius: 10px;
+}
+body > aside > fieldset > button {
+	padding: 5px;
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 10pt;
+	border: 0px;
+	border-radius: 10px;
+	background-color: #fccfb7;
+	color: #000000;
+	text-shadow: #ffffff 1px 1px 5px;
+	cursor: pointer;
+}
+body > aside > fieldset > button:hover {
+	background-color: #000000;
+	color: #ffffff;
+}

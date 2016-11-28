@@ -4,21 +4,49 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.commons.jxpath.JXPathContext;
-import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.lang.ArrayUtils;
 
 import jargon.core.Console;
 
 public final class FoliaUtils {
 	
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public static ArrayList<W> getWords(FoLiA folia) {
-		return (ArrayList<W>) JXPathContext.newContext(folia).getValue("text/p/s/w");
+		ArrayList<W> words = new ArrayList<W>();
+		
+		for (Text text : folia.getText()) {
+			for (P p : text.getP()) {
+				for (S s : p.getS()) {
+					for (W w : s.getW()) {
+						Console.log(w.getT().get(0).getContent().get(0));
+						words.add(w);
+					}
+				}
+			}
+		}
+		
+		return words;
+		//return (ArrayList<W>) JXPathContext.newContext(folia).getValue("text/p/s/w");
 	}
 	
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public static ArrayList<Dependency> getDependencies(FoLiA folia) {
-		return (ArrayList<Dependency>) JXPathContext.newContext(folia).getValue("text/p/s/dependencies/dependency");
+		ArrayList<Dependency> wordDependencies = new ArrayList<Dependency>();
+		
+		for (Text text : folia.getText()) {
+			for (P p : text.getP()) {
+				for (S s : p.getS()) {
+					for (Dependencies dependencies : s.getDependencies()) {
+						for (Dependency dependency : dependencies.getDependency()) {
+							wordDependencies.add(dependency);
+						}
+					}
+				}
+			}
+		}
+		
+		return wordDependencies;
+		//return (ArrayList<Dependency>) JXPathContext.newContext(folia).getValue("text/p/s/dependencies/dependency");
 	}
 	
 	public static boolean equals(Object parent, String xPathQuery, String match) {

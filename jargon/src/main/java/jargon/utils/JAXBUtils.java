@@ -32,6 +32,7 @@ public final class JAXBUtils {
 		try {
 			//Marshaller marshaller = JAXBContext.newInstance(object.getClass()).createMarshaller();
 			Marshaller marshaller = Singleton.getInstance().getFoliaMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			marshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/xml");
 			StringWriter stringWriter = new StringWriter();
@@ -84,6 +85,7 @@ public final class JAXBUtils {
 		try {
 			//Marshaller marshaller = JAXBContext.newInstance(object.getClass()).createMarshaller();
 			Marshaller marshaller = Singleton.getInstance().getFoliaMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			marshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
 			StringWriter stringWriter = new StringWriter();

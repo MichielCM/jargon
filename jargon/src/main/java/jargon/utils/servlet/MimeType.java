@@ -2,6 +2,8 @@ package jargon.utils.servlet;
 
 import java.util.HashMap;
 
+import jargon.core.Console;
+
 public class MimeType {
 
 	public enum mimeTypes {
@@ -19,7 +21,7 @@ public class MimeType {
 		this.mimeType = sMimeType;
 		
 		String sType = sMimeType.substring(0, sMimeType.indexOf("/"));
-		if (sType.equals("*"))
+		if (sType.trim().equals("*"))
 			this.type = mimeTypes.ALL;
 		else
 			this.type = mimeTypes.valueOf(sType.trim().toUpperCase());
@@ -60,6 +62,10 @@ public class MimeType {
 	
 	public boolean isMultipart() {
 		return (this.type == mimeTypes.MULTIPART);
+	}
+	
+	public boolean isText() {
+		return this.subType.equals("text");
 	}
 	
 	public boolean isXML() {

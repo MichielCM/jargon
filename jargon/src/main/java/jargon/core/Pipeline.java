@@ -27,7 +27,7 @@ import jargon.core.RuleEngine.ResourceType;
 public class Pipeline {
 
 	public enum Segments {
-		FULL, SENTENCES, TOKENS
+		FULL, LINES, SENTENCES, TOKENS
 	}
 	
 	private Source source;
@@ -54,11 +54,13 @@ public class Pipeline {
 	
 	private String[] _segmentize(Segments segmentType) {
 		switch(segmentType) {
+			case LINES:
+				return this.source.full[0].split("[\\n]+");
 			case SENTENCES:
 				//return this.source.full[0].split("(?<=[.,—?!;\\n])+");
 				return this.source.full[0].split("[.,—?!;\\n]+");
 			case TOKENS:
-				return this.source.full[0].split("\b");
+				return this.source.full[0].split("\\b");
 			default:
 				return null;
 		}
@@ -134,6 +136,18 @@ public class Pipeline {
 		return null;
 	}
 	
+	public Pipeline spellcheck(Segments segmentType, String... resources) {
+		try {
+			this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).set(this.source, this._spellcheck(segmentType, resources));
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Console.log("SPELLCHECKING DONE");
+		return this;
+	}
+	
 	public Pipeline spellcheck(Segments segmentType) {
 		try {
 			this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).set(this.source, this._spellcheck(segmentType));
@@ -144,6 +158,24 @@ public class Pipeline {
 		
 		Console.log("SPELLCHECKING DONE");
 		return this;
+	}
+	
+	private String[] _spellcheck(Segments segmentType, String... resources) {
+		try {
+			String[] segments = (String[])this.source.getClass().getDeclaredField(segmentType.toString().toLowerCase()).get(this.source);
+			AutoCorrector autoCorrector = new AutoCorrector();
+			
+			for (int i=0; i<segments.length; i++) {
+				segments[i] = autoCorrector.autoCorrect(segments[i], resources);
+			}
+			
+			return segments;
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	private String[] _spellcheck(Segments segmentType) {
@@ -232,7 +264,7 @@ public class Pipeline {
 		return this;
 	}
 	
-	public void _summarize() {
+	private void _summarize() {
 		for (FoLiA folia : this.source.folia) {
 			Singleton.getInstance().getRuleEngine(
 				"annotation",
@@ -323,6 +355,35 @@ public class Pipeline {
 				new File(
 					this.getClass().getClassLoader().getResource(
 						"summarization/time-of-day.xls"
+					).getFile()
+				)
+			).set(
+				"folia", folia
+			).set(
+				"foliaWrapper", new FoliaWrapper(folia)
+			).add(
+				FoliaUtils.getWords(folia).toArray()
+			).add(
+				FoliaUtils.getDependencies(folia).toArray()
+			).execute();
+		}
+	}
+	
+	public Pipeline map(String ontology) {
+		this._map(ontology);
+		
+		Console.log("MAPPING DONE");
+		return this;
+	}
+	
+	private void _map(String ontology) {
+		for (FoLiA folia : this.source.folia) {
+			Singleton.getInstance().getRuleEngine(
+				ontology,
+				ResourceType.XLS,
+				new File(
+					this.getClass().getClassLoader().getResource(
+						"mapping/".concat(ontology).concat(".xls")
 					).getFile()
 				)
 			).set(

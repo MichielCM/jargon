@@ -14,13 +14,16 @@ import jargon.core.BasicServlet;
 import jargon.core.Pipeline.Segments;
 import jargon.model.Source;
 import jargon.utils.JAXBUtils;
+import jargon.utils.upload.File;
 import jargon.utils.upload.File.FileType;
+import jargon.utils.upload.Upload;
 import jargon.utils.upload.Uploader;
+import jargon.utils.upload.Upload.UploadType;
 
 /**
  * Servlet implementation class Processor
  */
-@WebServlet("/process/natural/language")
+@WebServlet(urlPatterns = {"/process/natural/language"})
 public class Processor extends BasicServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -48,7 +51,7 @@ public class Processor extends BasicServlet {
 			.registerMimeTypes(FileType.TEXT, "application/json", "application/csv", "application/xml")
 			.upload(request, true);
 		
-		/*for (Upload up : uploader.getAll()) {
+		for (Upload up : uploader.getAll()) {
 			System.out.println(up.getType().toString());
 			System.out.println(up.getName());
 			
@@ -59,7 +62,7 @@ public class Processor extends BasicServlet {
 			
 			System.out.println(up.getContent());
 			System.out.println("---");
-		}*/
+		}
 		
 		Pipeline pipeline = new Pipeline(
 			new Source((uploader.get("text")).getContent().toString().trim())
@@ -79,6 +82,12 @@ public class Processor extends BasicServlet {
 		
 		if (uploader.get("summarize") != null)
 			pipeline.summarize();
+		
+		if (uploader.get("map") != null) {
+			for (String ontology : ((String)uploader.get("map").getContent()).split(",")) {
+				pipeline.map(ontology);
+			}
+		}
 		
 		if (uploader.get("annotate") != null)
 			if (uploader.get("annotate").getContent() != null)

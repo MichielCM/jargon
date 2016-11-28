@@ -1,5 +1,6 @@
 package jargon.utils.servlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,8 +11,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+
 import jargon.core.Console;
 import jargon.utils.upload.Uploader;
+import jargon.utils.JAXBUtils;
 import jargon.utils.upload.File.FileType;
 
 @SuppressWarnings("serial")
@@ -19,19 +23,26 @@ public class Servlet extends HttpServlet {
 
 	private HttpServletRequest servletRequest = null;
 	private HttpServletResponse servletResponse = null;
-	private ArrayList<MimeType> contentType = new ArrayList<MimeType>();
-	private HashMap<String,MimeType> contentTypeIndex = new HashMap<String,MimeType>();
-	private ArrayList<MimeType> accept = new ArrayList<MimeType>();
-	private HashMap<String,MimeType> acceptIndex = new HashMap<String,MimeType>();
+	private ArrayList<MimeType> contentType = null;
+	private HashMap<String,MimeType> contentTypeIndex = null;
+	private ArrayList<MimeType> accept = null;
+	private HashMap<String,MimeType> acceptIndex = null;
 	private Uploader uploader = null;
 	private String characterSet = null;
 	
 	public void init(ServletConfig servletConfig) throws ServletException {}
 	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		this.doPost(request, response);
+	}
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		this.servletRequest = request;
 		this.servletResponse = response;
+		
+		this.contentType = new ArrayList<MimeType>();
+		this.contentTypeIndex = new HashMap<String,MimeType>();
 		
 		if (request.getHeader("Content-Type") != null) {
 			if (!request.getHeader("Content-Type").isEmpty()) {
@@ -42,6 +53,9 @@ public class Servlet extends HttpServlet {
 				}
 			}
 		}
+
+		this.accept = new ArrayList<MimeType>();
+		this.acceptIndex = new HashMap<String,MimeType>();
 		
 		if (request.getHeader("Accept") != null) {
 			if (!request.getHeader("Accept").isEmpty()) {
@@ -74,24 +88,69 @@ public class Servlet extends HttpServlet {
 		return this.uploader;
 	}
 	
-	public void reply(Object answer) throws ServletException {
-		this.reply(answer, this.accept.get(0).getSubType());
+	public boolean reply(Object answer, Object... parameters) throws ServletException {
+		boolean success = false;
+		int index = 0;
+		
+		while(success == false && index < this.accept.size()) {
+			success = this.reply(answer, this.accept.get(index).getSubType(), parameters);
+		}
+		
+		return success;
 	}
 	
-	public void reply(Object answer, String mimeSubType) throws ServletException {
-		try {
-			if (this.acceptIndex.containsKey(mimeSubType)) {
-				if (answer.getClass().isArray()) {
+	public boolean reply(Object answer, String mimeSubType, Object... parameters) throws ServletException {
+		if (this.acceptIndex.containsKey(mimeSubType)) {
+			MimeType mimeType = this.acceptIndex.get(mimeSubType);
+			
+			ArrayList<String> answers = new ArrayList<String>();
+			
+			if (!answer.getClass().isArray()) {
+				answer = new Object[] { answer };
+			}
+			
+			for (int i=0; i<((Object[]) answer).length; i++) {
+				Object object = ((Object[]) answer)[i];
+				
+				if (mimeType.isHTML()) {
+					answers.add(JAXBUtils.toHTML(object, (File)parameters[0]));
+				} else if (mimeType.isXML()) {
+					if (i == 0)
+						answers.add("<?xml version=\"1.0\" encoding=\"UTF-8\" ?><array>");
 					
-				} else if (answer.getClass().isPrimitive()) {
+					String xml = JAXBUtils.toXML(object);
+					answers.add(xml.substring(xml.indexOf(System.getProperty("line.separator"))));
 					
-				} else {
-					
+					if (i+1 == ((Object[]) answer).length)
+						answers.add("</array>");
+				} else if (mimeType.isJSON()) {
+					answers.add(JAXBUtils.toJSON(object));
+				} else if (mimeType.isText()) {
+					answers.add(answer.toString());
 				}
-			} else throw new ServletException("mimeSubType not accepted: ".concat(mimeSubType));
-		} catch(ServletException e) {
+			}
+			
+			this.reply(
+				answers.toArray(new String[answers.size()])
+			);
+			return true;
+		} else return false;
+	}
+	
+	private boolean reply(String answer) {
+		try {
+			this.servletResponse.getWriter().println(answer);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return true;
+	}
+	
+	private boolean reply(String[] answer) throws ServletException {
+		return this.reply(
+			StringUtils.join(answer)
+		);
 	}
 	
 }

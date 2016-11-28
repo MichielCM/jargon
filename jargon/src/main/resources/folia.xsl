@@ -83,7 +83,15 @@
 									<xsl:for-each select="domain">
 										[<xsl:value-of select="translate(@class,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>]
 										<xsl:for-each select="feat">
-											<xsl:value-of select="@subset"/>: <xsl:value-of select="//w[@xml:id=current()/@class]/t"/>
+											<xsl:value-of select="@subset"/>:
+											<xsl:choose>
+												<xsl:when test="//w[@xml:id=current()/@class]/t">
+													<xsl:value-of select="//w[@xml:id=current()/@class]/t"/>
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:value-of select="@class"/>
+												</xsl:otherwise>
+											</xsl:choose>
 											<xsl:if test="not(position() = last())">, </xsl:if>
 										</xsl:for-each>
 									</xsl:for-each>

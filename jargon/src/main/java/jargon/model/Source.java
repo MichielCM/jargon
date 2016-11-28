@@ -6,6 +6,7 @@ public class Source {
 
 	public String input;
 	public String[] full;
+	public String[] lines;
 	public String[] sentences;
 	public String[] tokens;
 	public FoLiA[] folia;

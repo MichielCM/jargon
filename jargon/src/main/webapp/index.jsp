@@ -1,126 +1,216 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>NLP</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>JARGON</title>
 <script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
-<script type="text/javascript" src="js/foliaviewer.js"></script>
-<link rel="stylesheet" type="text/css" href="css/foliaviewer.css">
-<style type="text/css">
-body {
-	zoom: 125%;
-	font-family: Calibri;
-}
-label {
-	/*display: block;
-	margin-bottom: 5px;*/
-	margin-right: 10px;
-}
-input[type=text] {
-	width: 300px;
-}
-textarea {
-	width: 100%;
-	height: 150px;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="css/style.css">
 
 <script type="text/javascript">
 $(document).ready(function() {
+	$("#toggle").on("click", function() {
+		if ($("#search-area, #options-area").css("display") === "none") {
+			$("#search-area, #options-area").css("display", "block");
+			$("body > header").css("background", "#b7e1fc");
+		} else {
+			$("#search-area, #options-area").css("display", "none");
+			$("body > header").css("background", "transparent");
+		}
+	});
 	
-	var submitForm = function() {
-		var formData = new FormData();
+	$("#search-area button.ok").on("click", function() {
+		var call = function(vNav, vPost, vUrl, vDataType, vData) {
+			$.when(
+				$.ajax({
+					url: vUrl,
+					method: (vPost ? "POST" : "GET"),
+					dataType: vDataType,
+					accepts: {
+						"text": "text/plain; charset=UTF-8",
+						"html": "text/html; charset=UTF-8",
+						"xml": "text/xml; charset=UTF-8"
+					},
+					async: true,
+					processData: true, //false multipart?
+					contentType: false,
+					data: vData
+				})
+			).done(function(data) {
+				if (data !== "") {
+					$("main > section.contents").empty().append(data);
+					$("#toggle").click();
+				} else {
+					if (vNav) {
+						if (vNav.nextAll("nav.option").children("input:checked").closest("nav.option").eq(0).length > 0) {
+							vNav = vNav.nextAll("nav.option").children("input:checked").closest("nav.option").eq(0);
+							call(vNav, false, vNav.children("input").attr("data-url"), "text", {
+								"resources" : vNav.children("input").nextAll("fieldset").children("input:checked").map(function(i,o) {
+									return $(o).attr("id").substring($(o).attr("id").indexOf("-") + 1);
+								}).get().join(",")
+							});
+						} else {
+							call(vNav, false, "download", "html");
+						}
+					} else {
+						vNav = $("#options-area nav.option > input:checked").eq(0).closest("nav.option");
+						call(vNav, false, vNav.children("input").attr("data-url"), "text", {
+							"resources" : vNav.children("input").nextAll("fieldset").children("input:checked").map(function(i,o) {
+								return $(o).attr("id").substring($(o).attr("id").indexOf("-") + 1);
+							}).get().join(",")
+						});
+					}
+					
+					$("main > section.contents > progress").attr(
+						"value", parseInt($("main > section.contents > progress").attr("value")) + 1
+					)
+				}
+			});
+		}
 		
-		$.each($("form input, form textarea, form select"), function(i,o) {
-			switch($(o).attr("type")) {
-			case "text":
-				formData.append($(o).attr("name"), $(o).val());
-				break;
-			case "checkbox":
-				if ($(o).is(":checked"))
-					formData.append($(o).attr("name"), $(o).val());
-				break;
-			case "button":
-				break;
-			default:
-				formData.append($(o).attr("name"), $(o).val());
-			}
-		});
+		$("main > section.contents").empty().append(
+			$("<progress />").attr("max", $("#unabbreviation:checked,#spellcheck:checked,#summarization:checked,#map:checked").length + 3).attr("value","0")
+		)
 		
-		$(".foliaViewer").remove();
-		
-		$("body").append(
-			$.ajax({
-				url: "process/natural/language",
-				method: "POST",
-				dataType: "html",
-				accepts: {
-					"html": "text/html; charset=UTF-8"
-				},
-				async: false,
-				processData: false,
-				contentType: false,
-				data: formData
-			}).responseText
+		call(null, false, "upload", "text",
+			{ "input" : $("#search-area textarea.input").val() }
 		);
-	}
+	})
 	
-	$("#submitButton").on("click", submitForm);
+	$("#download-folia").on("click", function() {
+		$.ajax({
+			url: "download",
+			method: "GET",
+			dataType: "xml",
+			accepts: {
+				"text": "text/plain; charset=UTF-8",
+				"html": "text/html; charset=UTF-8",
+				"xml": "text/xml; charset=UTF-8"
+			},
+			async: true,
+			processData: true,
+			contentType: false
+		})
+	});
 	
-	$("textarea").focus();
+	$("#toggle").click();
 });
 </script>
 
 </head>
 <body>
 
-	<!--<form action="process/natural/language" method="post" enctype="multipart/form-data">-->
-	<form action="">
-		<label>
-			<!--Query Text:	<input type="text" name="text" value="de meneer heeft last van zware hoofdpijn. en hij vindt dat naar." />-->
-			<textarea name="text">
-				in de familie varices
-				zit in familie
-				zit niet in familie
-				in familie geen varices
-				geen atopie in familie
-				atopie in familie
-				atopische familie
-				moeilijke familie
-				in familie komt staar voor
-				in familie komt geen staar voor
-				hele familie heeft buisjes gehad
-				familie gering atopie
-				atopie licht in familie
-			</textarea>
-		</label>
-		<label>
-			<input type="checkbox" name="unabbreviate" checked="checked" /> Unabbreviate
-		</label>
-		<label>
-			<input type="checkbox" name="spellcheck" checked="checked" /> Spellcheck
-		</label>
-		<label>
-			<input type="checkbox" name="frog" checked="checked" disabled="disabled" /> Frog
-		</label>
-		<label>
-			<input type="checkbox" name="summarize" checked="checked" /> Summarize
-		</label>
-		<label>
-			Annotate:
-			<select name="annotate">
-				<option value="">Nothing</option>
-				<option value="family">Family Relations</option>
-			</select>
-		</label>
-		
-		<input type="button" value="Process Natural Language" id="submitButton" />
-	</form>
+<header>
+	<nav id="logo-area">
+		<section class="contents">
+			<span>&equiv;</span>
+			<span id="toggle">&#x21D5;</span>
+			<span>JARGON</span>
+		</section>
+	</nav>
 	
-	<hr />
+	<nav id="search-area">
+		<section class="contents">
+			<textarea class="input">diabetes mellitus in de familie. geen klachten.
+			varices in de familie.
+			geen grote problemen met stoelgang; wel blaren.
+			familieleden maken zich zorgen
+			hartstilstand in 99. sindsdien hart en vaatziekten.</textarea>
+			<label class="file">
+				<input type="file" accept=".txt, .csv" />Tekstbestand
+			</label>
+			<button class="ok">OK</button>
+		</section>
+	</nav>
 	
-	
+	<nav id="options-area">
+		<section class="contents">
+			<nav class="option">
+				<input type="checkbox" id="unabbreviation" data-url="unabbreviate" checked="checked" />
+				<label for="unabbreviation">Schrijf afkortingen voluit</label>
+				<fieldset id="unabbreviation">
+					<input type="checkbox" id="unabbreviation-general" name="general" checked="checked" />
+					<label for="unabbreviation-general">Algemeen Nederlands</label>
+					<input type="checkbox" id="unabbreviation-medical" name="medical" />
+					<label for="unabbreviation-medical">Medisch</label>
+					<input type="file" id="unabbreviation-misc" accept=".csv" title="Afkortingen in TAB-gescheiden formaat, eventueel met REGEX" />
+					<label for="unabbreviation-misc">Overig(e) bestand(en)</label>
+				</fieldset>
+			</nav>
+			
+			<nav class="option">
+				<input type="checkbox" id="spellcheck" data-url="spellcheck" />
+				<label for="spellcheck">Voer spellingscontrole uit</label>
+				<fieldset id="spellcheck">
+					<input type="checkbox" id="spellcheck-dutch" name="dutch" />
+					<label for="spellcheck-dutch">Algemeen Nederlands</label>
+					<input type="checkbox" id="spellcheck-meddra" name="meddra" />
+					<label for="spellcheck-meddra">MedDRA</label>
+					<input type="file" id="spellcheck-misc" accept=".txt, .csv" title="Woordenlijsten met correcte termen, 1 regel per term" />
+					<label for="spellcheck-misc">Overig(e) bestand(en)</label>
+				</fieldset>
+			</nav>
+			
+			<nav class="option required">
+				<input type="checkbox" id="clean" data-url="clean" checked="checked" />
+				<label for="clean"></label>
+			</nav>
+			
+			<nav class="option required">
+				<input type="checkbox" id="frog" data-url="frog" checked="checked" />
+				<label for="frog"></label>
+			</nav>
+			
+			<nav class="option">
+				<input type="checkbox" id="summarization" data-url="summarize" checked="checked" />
+				<label for="summarization">Vat samen</label>
+				<fieldset id="summarization">
+					<input type="checkbox" id="summarization-keywords" name="keyword-extraction" checked="checked" />
+					<label for="summarization-keywords">Kernwoorden</label>
+					<input type="checkbox" id="summarization-polarity" name="polarity" checked="checked" />
+					<label for="summarization-polarity">Polariteit</label>
+					<input type="checkbox" id="summarization-frequency" name="frequency" />
+					<label for="summarization-frequency">Frequentie</label>
+					<input type="checkbox" id="summarization-occurrence" name="occurrence" />
+					<label for="summarization-occurrence">Gebeurtenis</label>
+					<input type="checkbox" id="summarization-time-of-day" name="time-of-day" />
+					<label for="summarization-time-of-day">Tijd van de dag</label>
+				</fieldset>
+			</nav>
+			
+			<nav class="option">
+				<input type="checkbox" id="map" data-url="map" checked="checked" />
+				<label for="map">Koppel aan ontologie</label>
+				<fieldset id="map">
+					<input type="checkbox" id="map-meddra" name="meddra" checked="checked" />
+					<label for="map-meddra">MedDRA</label>
+					<input type="checkbox" id="map-icpc" name="icpc" />
+					<label for="map-icpc">ICPC</label>
+					<input type="checkbox" id="map-icd10" name="icd10" />
+					<label for="map-icd10">ICD-10</label>
+				</fieldset>
+			</nav>
+		</section>
+	</nav>
+</header>
+
+<main>
+	<section class="contents" /></section>
+</main>
+
+<aside>
+	<fieldset>
+		<legend>Download als:</legend>
+		<button id="download-folia">FoLiA</button>
+		<button id="download-csv">CSV</button>
+	</fieldset>
+</aside>
+
+<footer>
+	<section class="contents">
+		JARGON is ontwikkeld door Michiel Meulendijk in het LUMC.
+	</section>
+</footer>
+
 </body>
 </html>

@@ -20,6 +20,7 @@ public class Singleton {
 
 	static private Singleton singleton = new Singleton();
 	
+	private SQLManager sqlManager;
 	private Socket laMachine;
 	private FileManager fileManager;
 	private HashMap<String,RuleEngine> ruleEngines = new HashMap<String,RuleEngine>();
@@ -29,6 +30,18 @@ public class Singleton {
 	 
     public static Singleton getInstance() {
     	return singleton;
+    }
+    
+    public SQLManager getSQLManager() {
+    	if (this.sqlManager == null) {
+    		synchronized (this) {
+    			if (this.sqlManager == null) {
+    				this.sqlManager = new SQLManager(true);
+                }
+    		}
+    	}
+    	
+    	return this.sqlManager;
     }
     
     public Socket getLaMachine() throws UnknownHostException, IOException {

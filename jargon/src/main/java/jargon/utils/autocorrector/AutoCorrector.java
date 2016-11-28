@@ -2,39 +2,44 @@ package jargon.utils.autocorrector;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.languagetool.JLanguageTool;
+import org.apache.commons.lang.StringUtils;
+/*import org.languagetool.JLanguageTool;
 import org.languagetool.language.Dutch;
 import org.languagetool.rules.CategoryId;
 import org.languagetool.rules.Rule;
-import org.languagetool.rules.RuleMatch;
+import org.languagetool.rules.RuleMatch;*/
 
 import jargon.core.Console;
+import jargon.core.Singleton;
 import jargon.utils.csvreader.CSVReader;
 import jargon.utils.csvreader.CSVRecord;
 
 public class AutoCorrector {
 
-	private JLanguageTool jLanguageTool;
+	//private JLanguageTool jLanguageTool;
 	
 	public AutoCorrector() {
-		this.jLanguageTool = new JLanguageTool(new Dutch());
-		this.disableAllCategories();
+		//this.jLanguageTool = new JLanguageTool(new Dutch());
+		//this.disableAllCategories();
 	}
 	
-	public void addCustomRules(Rule... rules) {
+	/*public void addCustomRules(Rule... rules) {
 		for (Rule rule : rules) {
 			this.jLanguageTool.addRule(rule);
 		}
-	}
+	}*/
 	
-	private void disableAllCategories() {
+	/*private void disableAllCategories() {
 		for (Rule rule : jLanguageTool.getAllActiveRules()) {
 			//Console.log(rule.getCategory().getId());
 			this.jLanguageTool.disableCategory(rule.getCategory().getId());
 		}
-	}
+	}*/
 	
 	/** Replaces regular expressions in text string specified by categories.
 	 * @param text				String to check.
@@ -60,12 +65,78 @@ public class AutoCorrector {
 		return text;
 	}
 	
+	/** Replaces words that do not appear in the database tables specified by their closest match.
+	 * @param text			Text to be corrected.
+	 * @param resources		Database tables containing correct tokens.
+	 * @return				Corrected text.
+	 */
+	public String autoCorrect(String text, String... resources) {
+		//prepare query
+		ArrayList<String> queries = new ArrayList<String>();
+		
+		for (String resource : resources) {
+			queries.add("SELECT `token` FROM `spellcheck_".concat(resource).concat("` WHERE `token` LIKE ?"));
+		}
+		
+		String query = StringUtils.join(
+			queries.toArray(new String[queries.size()]),
+			" UNION "
+		);
+		
+		String[] parts = text.split("\\b");
+		ArrayList<String> correctedParts = new ArrayList<String>();
+		
+		for (String part : parts) {
+			if (!part.matches("[ \\t.,—?!;\\n]+") && !this.hasUnusualCasing(part)) {
+				//check if terms exist in databases
+				String[] partAsParameters = new String[queries.size()];
+				Arrays.fill(partAsParameters, part);
+				
+				String[] results = (String[]) Singleton.getInstance().getSQLManager().queryPreparedAsPrimitives(
+					query, partAsParameters, "java.lang.String"
+				);
+				
+				if (results.length == 0) {
+					//if term does not exist, find closest match
+					ArrayList<String> subQueries = new ArrayList<String>();
+					ArrayList<String> parameters = new ArrayList<String>();
+					
+					for (String resource : resources) {
+						subQueries.add("(SELECT `token` FROM `spellcheck_".concat(resource).concat("` WHERE `token` LIKE ? OR `token` LIKE ? HAVING jaro_winkler_similarity(?,`token`) > .9)"));
+						parameters.add("%".concat(part.substring((part.length() / 2))));
+						parameters.add(part.substring(0, (part.length() / 2)).concat("%"));
+						parameters.add(part);
+					}
+					
+					String subQuery = StringUtils.join(
+						subQueries.toArray(new String[queries.size()]),
+						" UNION "
+					).concat(" ORDER BY jaro_winkler_similarity(?,`token`) DESC");
+					
+					parameters.add(part);
+					
+					String[] corrections = (String[]) Singleton.getInstance().getSQLManager().queryPreparedAsPrimitives(
+						subQuery, parameters.toArray(new String[parameters.size()]), "java.lang.String"
+					);
+					
+					if (corrections.length > 0) {
+						part = corrections[0];
+					}
+				}
+			}
+			
+			correctedParts.add(part);
+		}
+		
+		return StringUtils.join(correctedParts.toArray(new String[correctedParts.size()]), "");
+	}
+	
 	/** Runs JLanguageTool.check on a string and automatically incorporates (first) suggestions.
 	 * @param text				String to check.
 	 * @param categories		Array of categories that will be checked. Custom rules have category MISC.
 	 * @return					Corrected string.
 	 */
-	public String autoCorrect(String text, String... categories) {
+	/*public String autoCorrect(String text, String... categories) {
 		try {
 			for (String category : categories) {
 				this.jLanguageTool.enableRuleCategory(new CategoryId(category));
@@ -95,7 +166,7 @@ public class AutoCorrector {
 		}
 		
 		return text;
-	}
+	}*/
 	
 	/** Returns whether or not a string has a mix of lower- and uppercased characters. test returns false, Test returns false, TEST returns true, TeSt returns true.
 	 * @param term		String to check.
